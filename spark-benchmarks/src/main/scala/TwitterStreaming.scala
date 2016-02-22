@@ -63,6 +63,12 @@ object TwitterStreaming {
       topList.foreach { case (count, tag) => println("%s (%s tweets)".format(tag, count)) }
     })
 
+    sys.ShutdownHookThread {
+      println("Gracefully stopping Spark Streaming Application")
+      ssc.stop(true, true)
+      println("Application stopped")
+    }
+
     ssc.start()
     ssc.awaitTermination()
     //    val sparkConf = new SparkConf()

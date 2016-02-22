@@ -77,8 +77,7 @@ class PullTwitterFeed {
       .setOAuthAccessTokenSecret(accessTokenSecret)
 
     val sparkConf = new SparkConf()
-      .setMaster("local[*]")
-      .setAppName("TwitterPopularTags")
+      .setAppName("PullTwitterFeed")
     val ssc = new StreamingContext(sparkConf, Seconds(2))
     val gson: Gson = new GsonBuilder().create();
 
