@@ -73,8 +73,7 @@ object PullTwitterFeed {
     System.setProperty("twitter4j.oauth.accessTokenSecret", accessTokenSecret)
 
     val sparkConf = new SparkConf()
-      .setAppName("PullTwitterFeed")
-    .setMaster("local[*]").set("spark.eventLog.enabled","true")
+      .setAppName("PullTwitterFeed").set("spark.eventLog.enabled","true")
 
     val ssc = new StreamingContext(sparkConf, Seconds(2))
 
@@ -93,7 +92,7 @@ object PullTwitterFeed {
         print("rdd partition=" + rdd.partitions.length)
         val outputRDD = rdd.repartition(numFilesPerPartition)
         outputRDD.saveAsTextFile(
-          outputDirectory + "/tweets/" + rdd.id)
+          outputDirectory + "/" + rdd.id)
         receivedTweetCount += count
         if (receivedTweetCount > tweetThreshold) {
           //sparkConf.set("timeToStop","true");
