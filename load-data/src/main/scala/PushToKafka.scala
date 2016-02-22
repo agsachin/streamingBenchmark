@@ -42,7 +42,7 @@ object PushToKafka{
       case other => throw new ClassCastException(other + " not a List[String]")
     }
     val kafkaPort = commonConfig.get("kafka.port") match {
-      case n: Number => n.toString()
+      case n: Number => n.longValue()
       case other => throw new ClassCastException(other + " not a Number")
     }
 
@@ -79,7 +79,7 @@ object PushToKafka{
     })
   }
 
-  def joinHosts(hosts: Seq[String], port: String): String = {
+  def joinHosts(hosts: Seq[String], port: Long): String = {
     val joined = new StringBuilder();
 
     for (host <- hosts) {
