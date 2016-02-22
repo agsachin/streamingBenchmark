@@ -2,12 +2,10 @@ package benchmark.common
 
 import java.util.logging.{Level, Logger}
 
-import com.google.gson.{Gson, GsonBuilder}
+import com.google.gson.GsonBuilder
 import org.apache.spark.SparkConf
 import org.apache.spark.streaming.twitter.TwitterUtils
 import org.apache.spark.streaming.{Seconds, StreamingContext}
-import twitter4j.auth.OAuthAuthorization
-import twitter4j.conf.ConfigurationBuilder
 
 
 /**
@@ -69,21 +67,21 @@ object PullTwitterFeed {
 //    val accessToken = "145001241-n8zdD6gi71xWBC8v55eW7BIBQ2uizR21iUCzLGyu";
 //    val accessTokenSecret = "kJsg01s3g9aKGNmbbNgLvzSgCkX0QY3QUbV8XqeWqOAxl";
 
-    val cb = new ConfigurationBuilder()
-    cb.setDebugEnabled(true)
-      .setOAuthConsumerKey(consumerKey)
-      .setOAuthConsumerSecret(consumerSecret)
-      .setOAuthAccessToken(accessToken)
-      .setOAuthAccessTokenSecret(accessTokenSecret)
+    System.setProperty("twitter4j.oauth.consumerKey", consumerKey)
+    System.setProperty("twitter4j.oauth.consumerSecret", consumerSecret)
+    System.setProperty("twitter4j.oauth.accessToken", accessToken)
+    System.setProperty("twitter4j.oauth.accessTokenSecret", accessTokenSecret)
 
     val sparkConf = new SparkConf()
       .setAppName("PullTwitterFeed")
-    val ssc = new StreamingContext(sparkConf, Seconds(2))
-    val gson: Gson = new GsonBuilder().create();
+    .setMaster("local[*]").set("spark.eventLog.enabled","true")
 
-    val twitterAuth = new OAuthAuthorization(cb.build())
+    val ssc = new StreamingContext(sparkConf, Seconds(2))
+
+   // val gson: Gson = new GsonBuilder().create();
+
     val tweetStream =
-      (1 to receiverParallalism).map { _ => TwitterUtils.createStream(ssc, Option(twitterAuth)).map(gson.toJson(_)) }
+      (1 to receiverParallalism).map { _ => TwitterUtils.createStream(ssc, None).map(new GsonBuilder().create().toJson(_)) }
     //TwitterUtils.createStream(ssc, Option(twitterAuth)).map(status => status)}
     // TwitterUtils.createStream(ssc, Option(twitterAuth)).map(gson.toJson(_)) }
     val unionDStream = ssc.union(tweetStream)
