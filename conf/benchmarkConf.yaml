@@ -39,8 +39,8 @@ twitter.consumerSecret: "3UKCluIj3OuftNhfeXkIyoR0hd8fs2lhAV7Ki5OqGKMc84IpkJ"
 twitter.accessToken: "145001241-n8zdD6gi71xWBC8v55eW7BIBQ2uizR21iUCzLGyu"
 twitter.accessTokenSecret: "kJsg01s3g9aKGNmbbNgLvzSgCkX0QY3QUbV8XqeWqOAxl"
 
-data.outputDirectory: "/tmp/output/tweets"
-data.inputDirectory: "/tmp/output/tweets"
+data.outputDirectory: "/tmp/output/tweets/2/"
+data.inputDirectory: "/tmp/data/tweet_dataset"
 data.numFilesPerPartition: 1
 data.tweetThreshold: 100000
 data.receiverParallalism: 3

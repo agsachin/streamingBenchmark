@@ -52,7 +52,6 @@ object PullTwitterFeed {
       case other => throw new ClassCastException(other + " not a Number")
     }
 
-
     Logger.getLogger("org").setLevel(Level.OFF)
     Logger.getLogger("akka").setLevel(Level.OFF)
 
@@ -82,7 +81,7 @@ object PullTwitterFeed {
     val tweetStream =
       (1 to receiverParallalism).map { _ => TwitterUtils.createStream(ssc, None).map(new GsonBuilder().create().toJson(_)) }
     //TwitterUtils.createStream(ssc, Option(twitterAuth)).map(status => status)}
-    // TwitterUtils.createStream(ssc, Option(twitterAuth)).map(gson.toJson(_)) }
+    //TwitterUtils.createStream(ssc, Option(twitterAuth)).map(gson.toJson(_)) }
     val unionDStream = ssc.union(tweetStream)
 
     unionDStream.foreachRDD((rdd, time) => {

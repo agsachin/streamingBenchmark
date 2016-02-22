@@ -74,9 +74,11 @@ object PushToKafka{
     fromFile(inputDirectory).getLines.foreach(line => {
       val text = new JsonParser().parse(line).getAsJsonObject().get("text");
       //println(text.getAsString)
+      Thread.sleep(1)
       send(text.getAsString)
     })
   }
+
   def joinHosts(hosts: Seq[String], port: String): String = {
     val joined = new StringBuilder();
 
