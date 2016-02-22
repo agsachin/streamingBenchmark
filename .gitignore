@@ -1,6 +1,8 @@
 *.class
 .idea/*
-
+flink-benchmarks/dependency-reduced-pom.xml
+load-data/dependency-reduced-pom.xml
+storm-benchmarks/dependency-reduced-pom.xml
 */target/*
 
 # Mobile Tools for Java (J2ME)
