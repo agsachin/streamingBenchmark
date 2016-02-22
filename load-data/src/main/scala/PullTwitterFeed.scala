@@ -16,7 +16,7 @@ import twitter4j.conf.ConfigurationBuilder
 
 
 
-class PullTwitterFeed {
+object PullTwitterFeed {
   def main(args: Array[String]) {
     val commonConfig = Utils.findAndReadConfigFile(args(0), true).asInstanceOf[java.util.Map[String, Any]];
 

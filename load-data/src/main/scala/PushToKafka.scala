@@ -12,7 +12,7 @@ import scala.io.Source._
  * Created by sachin on 2/18/16.
  */
 
-class PushToKafka{
+object PushToKafka{
   def main(args: Array[String]) {
     val commonConfig = Utils.findAndReadConfigFile(args(0), true).asInstanceOf[java.util.Map[String, Any]];
 
