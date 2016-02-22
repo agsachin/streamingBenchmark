@@ -32,7 +32,7 @@ kafka.brokers:
     - "169.45.101.75"
     - "169.45.101.67"
     - "169.45.101.73"
-kafka.port: "9092"
+kafka.port: 9092
 
 twitter.consumerKey: "taVpGWVGyRiFnQDsNwPwITRcH"
 twitter.consumerSecret: "3UKCluIj3OuftNhfeXkIyoR0hd8fs2lhAV7Ki5OqGKMc84IpkJ"
@@ -41,6 +41,6 @@ twitter.accessTokenSecret: "kJsg01s3g9aKGNmbbNgLvzSgCkX0QY3QUbV8XqeWqOAxl"
 
 data.outputDirectory: "/tmp/output/tweets"
 data.inputDirectory: "/tmp/output/tweets"
-data.numFilesPerPartition: "1"
-data.tweetThreshold: "100000"
-data.receiverParallalism: "3"
+data.numFilesPerPartition: 1
+data.tweetThreshold: 100000
+data.receiverParallalism: 3
