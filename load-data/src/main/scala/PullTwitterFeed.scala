@@ -8,7 +8,6 @@ import org.apache.spark.streaming.twitter.TwitterUtils
 import org.apache.spark.streaming.{Seconds, StreamingContext}
 import twitter4j.auth.OAuthAuthorization
 import twitter4j.conf.ConfigurationBuilder
-import benchmark.common.Utils
 
 
 /**
@@ -37,8 +36,6 @@ class PullTwitterFeed {
       case s: String => s
       case other => throw new ClassCastException(other + " not a String")
     }
-
-
     val outputDirectory = commonConfig.get("data.outputDirectory") match {
       case s: String => s
       case other => throw new ClassCastException(other + " not a String")
@@ -47,10 +44,7 @@ class PullTwitterFeed {
       case n: Number => n.intValue()
       case other => throw new ClassCastException(other + " not a Number")
     }
-    var receivedTweetCount = commonConfig.get("data.receivedTweetCount") match {
-      case n: Number => n.longValue()
-      case other => throw new ClassCastException(other + " not a Number")
-    }
+    var receivedTweetCount:Long = 0 ;
     val tweetThreshold = commonConfig.get("data.tweetThreshold") match {
       case n: Number => n.longValue()
       case other => throw new ClassCastException(other + " not a Number")

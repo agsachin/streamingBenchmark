@@ -3,9 +3,9 @@ package benchmark.common
 import java.util.Properties
 
 import com.google.gson.JsonParser
-import scala.collection.JavaConverters._
 import kafka.producer.{KeyedMessage, Producer, ProducerConfig}
-import benchmark.common.Utils
+
+import scala.collection.JavaConverters._
 import scala.io.Source._
 
 /**
@@ -37,7 +37,7 @@ class PushToKafka{
       case other => throw new ClassCastException(other + " not a String")
     }
 
-    val kafkaHosts = commonConfig.get("kafka.brokers").asInstanceOf[java.util.List[String]] match {
+    val kafkaBrokers = commonConfig.get("kafka.brokers").asInstanceOf[java.util.List[String]] match {
       case l: java.util.List[String] => l.asScala.toSeq
       case other => throw new ClassCastException(other + " not a List[String]")
     }
@@ -48,7 +48,7 @@ class PushToKafka{
 
     // Create direct kafka stream with brokers and topics
     val topicsSet = Set(topic)
-    val brokerListString = joinHosts(kafkaHosts, kafkaPort)
+    val brokerListString = joinHosts(kafkaBrokers, kafkaPort)
     //    val BROKER_LIST: String = "localhost:9092,localhost:9093,localhost:9094";
     //    val SERIALIZER: String = "kafka.serializer.StringEncoder";
     //    val REQUIRED_ACKS: String = "1";
