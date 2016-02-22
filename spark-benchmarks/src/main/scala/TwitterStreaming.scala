@@ -2,6 +2,8 @@
  * Created by sachin on 12/10/15.
  */
 
+package spark.benchmark
+
 import benchmark.common.Utils
 import kafka.serializer.StringDecoder
 import org.apache.spark.SparkConf
@@ -88,14 +90,14 @@ object TwitterStreaming {
   }
   def joinHosts(hosts: Seq[String], port: String): String = {
     val joined = new StringBuilder();
-    hosts.foreach({
+
+    for (host <- hosts) {
       if (!joined.isEmpty) {
-        joined.append(",");
+        joined.append(",")
       }
+      joined.append(host).append(":").append(port)
 
-      joined.append(_).append(":").append(port);
-    })
-    return joined.toString();
+    }
+    return joined.toString()
   }
-
 }

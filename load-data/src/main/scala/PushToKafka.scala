@@ -79,13 +79,14 @@ class PushToKafka{
   }
   def joinHosts(hosts: Seq[String], port: String): String = {
     val joined = new StringBuilder();
-    hosts.foreach({
-      if (!joined.isEmpty) {
-        joined.append(",");
-      }
 
-      joined.append(_).append(":").append(port);
-    })
-    return joined.toString();
+    for (host <- hosts) {
+      if (!joined.isEmpty) {
+        joined.append(",")
+      }
+      joined.append(host).append(":").append(port)
+
+    }
+    return joined.toString()
   }
 }
