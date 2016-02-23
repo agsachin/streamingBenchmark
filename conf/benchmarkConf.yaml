@@ -42,5 +42,5 @@ twitter.accessTokenSecret: "kJsg01s3g9aKGNmbbNgLvzSgCkX0QY3QUbV8XqeWqOAxl"
 data.outputDirectory: "/tmp/output/tweets/2/"
 data.inputDirectory: "/tmp/data/tweet_dataset"
 data.numFilesPerPartition: 1
-data.tweetThreshold: 100000
-data.receiverParallalism: 3
+data.tweetThreshold: 0
+data.receiverParallalism: 1

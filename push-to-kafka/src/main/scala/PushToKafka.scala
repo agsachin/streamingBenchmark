@@ -60,7 +60,7 @@ object PushToKafka{
       brokerListString.append(host).append(":").append(kafkaPort)
     }
 
-    println("all props="+" brokerListString.toString()"+ brokerListString.toString()+"serializer"+serializer+"requiredAcks"+requiredAcks)
+   // println("all props="+" brokerListString.toString()"+ brokerListString.toString()+"serializer"+serializer+"requiredAcks"+requiredAcks)
     /** Producer properties **/
     var props: Properties = new Properties()
     props.put("metadata.broker.list", brokerListString.toString())
