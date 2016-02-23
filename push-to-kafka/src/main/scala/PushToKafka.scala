@@ -1,10 +1,10 @@
-package benchmark.common
+package benchmark.common.kafkaPush
 
 import java.util.Properties
 
 import com.google.gson.JsonParser
 import kafka.producer.{KeyedMessage, Producer, ProducerConfig}
-
+import benchmark.common._
 import scala.collection.JavaConverters._
 import scala.io.Source._
 
@@ -48,18 +48,26 @@ object PushToKafka{
 
     // Create direct kafka stream with brokers and topics
     val topicsSet = Set(topic)
-    val brokerListString = joinHosts(kafkaBrokers, kafkaPort)
-    //    val BROKER_LIST: String = "localhost:9092,localhost:9093,localhost:9094";
+     //    val BROKER_LIST: String = "localhost:9092,localhost:9093,localhost:9094";
     //    val SERIALIZER: String = "kafka.serializer.StringEncoder";
     //    val REQUIRED_ACKS: String = "1";
     //    val KAFKA_TOPIC: String = "test1";
+    val brokerListString = new StringBuilder();
 
+    for (host <- kafkaBrokers) {
+      if (!brokerListString.isEmpty) {
+        brokerListString.append(",")
+      }
+      brokerListString.append(host).append(":").append(kafkaPort)
+
+    }
 
     /** Producer properties **/
     var props: Properties = new Properties()
-    props.put("metadata.broker.list", brokerListString)
+    props.put("metadata.broker.list", brokerListString.toString())
     props.put("auto.offset.reset" , "smallest")
     props.put("serializer.class", serializer)
+
 
     val config: ProducerConfig = new ProducerConfig(props)
     val producer: Producer[String, String] = new Producer[String, String](config)
@@ -76,18 +84,5 @@ object PushToKafka{
       Thread.sleep(1)
       send(text.getAsString)
     })
-  }
-
-  def joinHosts(hosts: Seq[String], port: Long): String = {
-    val joined = new StringBuilder();
-
-    for (host <- hosts) {
-      if (!joined.isEmpty) {
-        joined.append(",")
-      }
-      joined.append(host).append(":").append(port)
-
-    }
-    return joined.toString()
   }
 }

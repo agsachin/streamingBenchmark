@@ -1,9 +1,10 @@
-package benchmark.common
+package benchmark.common.twitterPull
 
 import java.util.logging.{Level, Logger}
 
 import com.google.gson.GsonBuilder
 import org.apache.spark.SparkConf
+import benchmark.common._
 import org.apache.spark.streaming.twitter.TwitterUtils
 import org.apache.spark.streaming.{Seconds, StreamingContext}
 
