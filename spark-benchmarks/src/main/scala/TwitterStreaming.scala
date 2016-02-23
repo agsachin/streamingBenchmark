@@ -25,10 +25,14 @@ object TwitterStreaming {
       case other => throw new ClassCastException(other + " not a List[String]")
     }
     val kafkaPort = commonConfig.get("kafka.port") match {
-      case n: Number => n.longValue()
+      case n: Number => n.toString()
       case other => throw new ClassCastException(other + " not a Number")
     }
     val topic = commonConfig.get("kafka.topic") match {
+      case s: String => s
+      case other => throw new ClassCastException(other + " not a String")
+    }
+    val resultOutDir = commonConfig.get("data.result.outputDirectory") match {
       case s: String => s
       case other => throw new ClassCastException(other + " not a String")
     }
@@ -39,14 +43,26 @@ object TwitterStreaming {
     //  val kafkaHosts = "localhost:9092,localhost:9093,localhost:9094";
    // val topicsSet = topics.split(",").toSet
     val topicsSet = Set(topic)
-    val brokerListString = joinHosts(kafkaBrokers, kafkaPort)
+
+    val brokerListString = new StringBuilder();
+
+    for (host <- kafkaBrokers) {
+      if (!brokerListString.isEmpty) {
+        brokerListString.append(",")
+      }
+      brokerListString.append(host).append(":").append(kafkaPort)
+    }
+   // val brokerListString = joinHosts(kafkaBrokers, kafkaPort)
 
     val sparkConf = new SparkConf()
       .setAppName("TwitterStreaming")
+      .set("spark.eventLog.enabled","true")
+    .setMaster("local[*]")
+    //  .set("spark.eventLog.dir","file:///tmp/spark-events")
 
     val ssc = new StreamingContext(sparkConf, Milliseconds(batchSize))
 
-    val kafkaParams = Map[String, String]("metadata.broker.list" -> brokerListString)
+    val kafkaParams = Map[String, String]("metadata.broker.list" -> brokerListString.toString())
     System.err.println(
       "Trying to connect to Kafka at " + kafkaBrokers)
     val messages = KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder](
@@ -58,9 +74,12 @@ object TwitterStreaming {
       .map { case (topic, count) => (count, topic) }
       .transform(_.sortByKey(false))
 
-    topCounts60.foreachRDD(rdd => {
-      val topList = rdd.take(10)
-      topList.foreach { case (count, tag) => println("%s (%s tweets)".format(tag, count)) }
+    topCounts60.foreachRDD((rdd, time) => {
+      val formattedRdd = rdd.map({ case (count, tag) => (tag, count)})
+      val count = formattedRdd.count()
+      if (count > 0) {
+        formattedRdd.saveAsTextFile(resultOutDir + "/" + rdd.id)
+      }
     })
 
     sys.ShutdownHookThread {
@@ -69,41 +88,16 @@ object TwitterStreaming {
       println("Application stopped")
     }
 
+    //    topCounts60.foreachRDD(rdd => {
+//      val topList = rdd.take(10)
+//      topList.foreach { case (count, tag) => println("%s (%s tweets)".format(tag, count)) }
+//    })
+
+
+
+
     ssc.start()
     ssc.awaitTermination()
-    //    val sparkConf = new SparkConf()
-    //      .setMaster("local[4]")
-    //      .setAppName("TwitterPopularTags")
-    //    val ssc = new StreamingContext(sparkConf, Seconds(2))
-    //
-    //    val stream = TwitterUtils.createStream(ssc, None)
-    //
-    //    val hashTags = stream.flatMap(status => status.getText.split(" ").filter(_.startsWith("#")))
-    //
-    //    val topCounts60 = hashTags.map((_, 1)).reduceByKeyAndWindow(_ + _, Seconds(60))
-    //      .map { case (topic, count) => (count, topic) }
-    //      .transform(_.sortByKey(false))
-    //
-    //    topCounts60.foreachRDD(rdd => {
-    //      val topList = rdd.take(10)
-    //      Thread sleep 1500
-    //      println("\nPopular topics in last 60 seconds (%s total):".format(rdd.count()))
-    //      topList.foreach { case (count, tag) => println("%s (%s tweets)".format(tag, count)) }
-    //    })
-    //
-    //    ssc.start()
-    //    ssc.awaitTermination()
-  }
-  def joinHosts(hosts: Seq[String], port: Long): String = {
-    val joined = new StringBuilder();
+   }
 
-    for (host <- hosts) {
-      if (!joined.isEmpty) {
-        joined.append(",")
-      }
-      joined.append(host).append(":").append(port)
-
-    }
-    return joined.toString()
-  }
 }
