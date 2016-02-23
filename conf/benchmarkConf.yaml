@@ -24,8 +24,8 @@ storm.ackers: 2
 spark.batchtime: 2000
 
 
-kafka.serializer: ""
-kafka.requiredAcks: "true"
+kafka.serializer: "kafka.serializer.StringEncoder"
+kafka.requiredAcks: "1"
 kafka.partitions: 3
 kafka.topic: "ad-events1"
 kafka.brokers:
