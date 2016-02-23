@@ -45,11 +45,11 @@ object PushToKafka{
 
     // Create direct kafka stream with brokers and topics
 
-//        val brokerListString: String = "localhost:9092,localhost:9093,localhost:9094";
-//        val serializer: String = "kafka.serializer.StringEncoder";
-//        val requiredAcks: String = "1";
-//        val topic: String = "test1";
-//        val inputDirectory="/tmp/data/event";
+    //        val brokerListString: String = "localhost:9092,localhost:9093,localhost:9094";
+    //        val serializer: String = "kafka.serializer.StringEncoder";
+    //        val requiredAcks: String = "1";
+    //        val topic: String = "test1";
+    //        val inputDirectory="/tmp/data/event";
 
     val brokerListString = new StringBuilder();
 
@@ -60,11 +60,11 @@ object PushToKafka{
       brokerListString.append(host).append(":").append(kafkaPort)
     }
 
-   // println("all props="+" brokerListString.toString()"+ brokerListString.toString()+"serializer"+serializer+"requiredAcks"+requiredAcks)
+    // println("all props="+" brokerListString.toString()"+ brokerListString.toString()+"serializer"+serializer+"requiredAcks"+requiredAcks)
     /** Producer properties **/
     var props: Properties = new Properties()
     props.put("metadata.broker.list", brokerListString.toString())
-    props.put("auto.offset.reset" , "smallest")
+    props.put("auto.offset.reset", "smallest")
     props.put("serializer.class", serializer)
     props.put("request.required.acks", requiredAcks)
 
@@ -73,16 +73,17 @@ object PushToKafka{
 
     def send(text: String) {
       val data: KeyedMessage[String, String] = new KeyedMessage[String, String](topic, text)
-      println(text)
+      // println(text)
       producer.send(data);
     }
-
+    while (true) {
     fromFile(inputDirectory).getLines.foreach(line => {
       val text = new JsonParser().parse(line).getAsJsonObject().get("text")
       //println(text.getAsString)
-      Thread.sleep(1)
+      // Thread.sleep(1)
       send(text.getAsString)
     })
+  }
     producer.close()
   }
 }
