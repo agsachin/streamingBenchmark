@@ -57,7 +57,7 @@ object TwitterStreaming {
     val sparkConf = new SparkConf()
       .setAppName("TwitterStreaming")
       .set("spark.eventLog.enabled","true")
-    .setMaster("local[*]")
+    //.setMaster("local[*]")
     //  .set("spark.eventLog.dir","file:///tmp/spark-events")
 
     val ssc = new StreamingContext(sparkConf, Milliseconds(batchSize))
