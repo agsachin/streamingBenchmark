@@ -60,7 +60,6 @@ object PushToKafka{
     props.put("metadata.broker.list", brokerListString)
     props.put("auto.offset.reset" , "smallest")
     props.put("serializer.class", serializer)
-    props.put("request.required.acks", requiredAcks)
 
     val config: ProducerConfig = new ProducerConfig(props)
     val producer: Producer[String, String] = new Producer[String, String](config)
