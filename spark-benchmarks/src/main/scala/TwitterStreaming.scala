@@ -8,7 +8,7 @@ import benchmark.common.Utils
 import kafka.serializer.StringDecoder
 import org.apache.spark.SparkConf
 import org.apache.spark.streaming.kafka.KafkaUtils
-import org.apache.spark.streaming.{Milliseconds, Seconds, StreamingContext}
+import org.apache.spark.streaming.{Milliseconds, StreamingContext}
 
 import scala.collection.JavaConverters._
 
@@ -40,6 +40,10 @@ object TwitterStreaming {
       case n: Number => n.longValue()
       case other => throw new ClassCastException(other + " not a Number")
     }
+    val windowSize = commonConfig.get("spark.windowSize") match {
+      case n: Number => n.longValue()
+      case other => throw new ClassCastException(other + " not a Number")
+    }
     //  val kafkaHosts = "localhost:9092,localhost:9093,localhost:9094";
    // val topicsSet = topics.split(",").toSet
     val topicsSet = Set(topic)
@@ -58,7 +62,7 @@ object TwitterStreaming {
       .setAppName("TwitterStreaming")
       .set("spark.eventLog.enabled","true")
     //.setMaster("local[*]")
-    //  .set("spark.eventLog.dir","file:///tmp/spark-events")
+    //.set("spark.eventLog.dir","file:///tmp/spark-events")
 
     val ssc = new StreamingContext(sparkConf, Milliseconds(batchSize))
 
@@ -70,9 +74,11 @@ object TwitterStreaming {
 
     val lines = messages.map(_._2)
     val hashTags = lines.flatMap(status => status.split(" ").filter(_.startsWith("#")))
-    val topCounts60 = hashTags.map((_, 1)).reduceByKeyAndWindow(_ + _, Seconds(60))
+    val topCounts60 = hashTags.map((_, 1)).reduceByKeyAndWindow(_ + _, Milliseconds(windowSize))
       .map { case (topic, count) => (count, topic) }
       .transform(_.sortByKey(false))
+
+    //topCounts60.persist(StorageLevel.DISK_ONLY)
 
     topCounts60.foreachRDD((rdd, time) => {
       val formattedRdd = rdd.map({ case (count, tag) => (tag, count)})
@@ -88,13 +94,10 @@ object TwitterStreaming {
       println("Application stopped")
     }
 
-    //    topCounts60.foreachRDD(rdd => {
+//    topCounts60.foreachRDD(rdd => {
 //      val topList = rdd.take(10)
 //      topList.foreach { case (count, tag) => println("%s (%s tweets)".format(tag, count)) }
 //    })
-
-
-
 
     ssc.start()
     ssc.awaitTermination()

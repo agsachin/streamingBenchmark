@@ -2,11 +2,11 @@ package benchmark.common.twitterPull
 
 import java.util.logging.{Level, Logger}
 
+import benchmark.common._
 import com.google.gson.GsonBuilder
 import org.apache.spark.SparkConf
-import benchmark.common._
 import org.apache.spark.streaming.twitter.TwitterUtils
-import org.apache.spark.streaming.{Seconds, StreamingContext}
+import org.apache.spark.streaming.{Milliseconds, StreamingContext}
 
 
 /**
@@ -52,7 +52,10 @@ object PullTwitterFeed {
       case n: Number => n.intValue()
       case other => throw new ClassCastException(other + " not a Number")
     }
-
+    val batchSize = commonConfig.get("spark.batchtime") match {
+      case n: Number => n.longValue()
+      case other => throw new ClassCastException(other + " not a Number")
+    }
     Logger.getLogger("org").setLevel(Level.OFF)
     Logger.getLogger("akka").setLevel(Level.OFF)
 
@@ -77,7 +80,7 @@ object PullTwitterFeed {
       //.setMaster("local[*]")
       .set("spark.eventLog.enabled","true")
 
-    val ssc = new StreamingContext(sparkConf, Seconds(2))
+    val ssc = new StreamingContext(sparkConf, Milliseconds(batchSize))
 
    // val gson: Gson = new GsonBuilder().create();
 
@@ -86,7 +89,6 @@ object PullTwitterFeed {
     //TwitterUtils.createStream(ssc, Option(twitterAuth)).map(status => status)}
     //TwitterUtils.createStream(ssc, Option(twitterAuth)).map(gson.toJson(_)) }
     val unionDStream = ssc.union(tweetStream)
-
 
     unionDStream.foreachRDD((rdd, time) => {
       val count = rdd.count()
