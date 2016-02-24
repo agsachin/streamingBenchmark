@@ -9,10 +9,19 @@ import kafka.serializer.StringDecoder
 import org.apache.spark.SparkConf
 import org.apache.spark.streaming.kafka.KafkaUtils
 import org.apache.spark.streaming.{Milliseconds, StreamingContext}
-
 import scala.collection.JavaConverters._
 
 object TwitterStreaming {
+
+  private var imap: scala.collection.mutable.Map[String, Long] = _
+  def getMap(): scala.collection.mutable.Map[String, Long] = synchronized {
+    if (imap == null) imap = scala.collection.mutable.Map()
+    imap
+  }
+  def setMap(imap: scala.collection.mutable.Map[String, Long]) = synchronized {
+    this.imap = imap
+  }
+
   def main(args: Array[String]) {
     val commonConfig = Utils.findAndReadConfigFile(args(0), true).asInstanceOf[java.util.Map[String, Any]];
 
@@ -44,6 +53,10 @@ object TwitterStreaming {
       case n: Number => n.longValue()
       case other => throw new ClassCastException(other + " not a Number")
     }
+    val checkPointPath = commonConfig.get("spark.checkPointPath") match {
+      case s: String => s
+      case other => throw new ClassCastException(other + " not a String")
+    }
     //  val kafkaHosts = "localhost:9092,localhost:9093,localhost:9094";
    // val topicsSet = topics.split(",").toSet
     val topicsSet = Set(topic)
@@ -58,13 +71,18 @@ object TwitterStreaming {
     }
    // val brokerListString = joinHosts(kafkaBrokers, kafkaPort)
 
+
     val sparkConf = new SparkConf()
       .setAppName("TwitterStreaming")
       .set("spark.eventLog.enabled","true")
-    //.setMaster("local[*]")
+    .setMaster("local[*]")
     //.set("spark.eventLog.dir","file:///tmp/spark-events")
 
     val ssc = new StreamingContext(sparkConf, Milliseconds(batchSize))
+    ssc.checkpoint(checkPointPath)
+
+    val listener = new LatencyListener(ssc,commonConfig)
+    ssc.addStreamingListener(listener)
 
     val kafkaParams = Map[String, String]("metadata.broker.list" -> brokerListString.toString())
     System.err.println(
@@ -80,13 +98,18 @@ object TwitterStreaming {
 
     //topCounts60.persist(StorageLevel.DISK_ONLY)
 
-    topCounts60.foreachRDD((rdd, time) => {
-      val formattedRdd = rdd.map({ case (count, tag) => (tag, count)})
-      val count = formattedRdd.count()
-      if (count > 0) {
-        formattedRdd.saveAsTextFile(resultOutDir + "/" + rdd.id)
-      }
-    })
+
+
+    topCounts60.foreachRDD(rdd=> {
+        rdd.foreachPartition(partitionOfRecords => {
+          val imap = getMap
+          partitionOfRecords.foreach{case (count, tag) =>
+            imap(tag) = if (imap.contains(tag)) imap(tag) + count else count
+          }
+          setMap(imap)
+        })
+      })
+
 
     sys.ShutdownHookThread {
       println("Gracefully stopping Spark Streaming Application")

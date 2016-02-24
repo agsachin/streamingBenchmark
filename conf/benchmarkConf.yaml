@@ -21,8 +21,9 @@ storm.workers: 1
 storm.ackers: 2
 
 #Spark Specific
-spark.batchtime: 200000
+spark.batchtime: 2000
 spark.windowSize: 60000
+spark.checkPointPath: "/tmp/checkpointPath/"
 
 
 kafka.serializer: "kafka.serializer.StringEncoder"
@@ -34,6 +35,7 @@ kafka.brokers:
     - "169.45.101.67"
     - "169.45.101.73"
 kafka.port: 9092
+kafka.recordLimit: 100000
 
 twitter.consumerKey: "taVpGWVGyRiFnQDsNwPwITRcH"
 twitter.consumerSecret: "3UKCluIj3OuftNhfeXkIyoR0hd8fs2lhAV7Ki5OqGKMc84IpkJ"
@@ -45,4 +47,4 @@ data.result.outputDirectory: "/tmp/data/result/"
 data.inputDirectory: "/tmp/data/tweet_dataset"
 data.numFilesPerPartition: 1
 data.tweetThreshold: 0
-data.receiverParallalism: 1
+data.receiverParallalism: 3

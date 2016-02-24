@@ -42,7 +42,10 @@ object PushToKafka{
       case n: Number => n.longValue()
       case other => throw new ClassCastException(other + " not a Number")
     }
-
+    val recordLimit = commonConfig.get("kafka.recordLimit") match {
+      case n: Number => n.longValue()
+      case other => throw new ClassCastException(other + " not a Number")
+    }
     // Create direct kafka stream with brokers and topics
 
     //        val brokerListString: String = "localhost:9092,localhost:9093,localhost:9094";
@@ -70,18 +73,22 @@ object PushToKafka{
 
     val config: ProducerConfig = new ProducerConfig(props)
     val producer: Producer[String, String] = new Producer[String, String](config)
+    var count:Long=0;
 
     def send(text: String) {
       val data: KeyedMessage[String, String] = new KeyedMessage[String, String](topic, text)
       // println(text)
+
       producer.send(data);
     }
-    while (true) {
+
+    while (count <= recordLimit) {
     fromFile(inputDirectory).getLines.foreach(line => {
       val text = new JsonParser().parse(line).getAsJsonObject().get("text")
       //println(text.getAsString)
       // Thread.sleep(1)
       send(text.getAsString)
+      count += 1
     })
   }
     producer.close()
