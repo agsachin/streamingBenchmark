@@ -35,24 +35,24 @@ object PullTwitterFeed {
       case s: String => s
       case other => throw new ClassCastException(other + " not a String")
     }
-    val outputDirectory = commonConfig.get("data.outputDirectory") match {
+    val outputDirectory = commonConfig.get("data.twitter.outputDirectory") match {
       case s: String => s
       case other => throw new ClassCastException(other + " not a String")
     }
-    val numFilesPerPartition = commonConfig.get("data.numFilesPerPartition") match {
+    val numFilesPerPartition = commonConfig.get("data.twitter.write.numFilesPerPartition") match {
       case n: Number => n.intValue()
       case other => throw new ClassCastException(other + " not a Number")
     }
     var receivedTweetCount:Long = 0 ;
-    val tweetThreshold = commonConfig.get("data.tweetThreshold") match {
+    val tweetThreshold = commonConfig.get("data.twitter.tweet.threshold") match {
       case n: Number => n.longValue()
       case other => throw new ClassCastException(other + " not a Number")
     }
-    val receiverParallalism = commonConfig.get("data.receiverParallalism") match {
+    val receiverParallalism = commonConfig.get("data.twitter.receiver.parallalism") match {
       case n: Number => n.intValue()
       case other => throw new ClassCastException(other + " not a Number")
     }
-    val batchSize = commonConfig.get("spark.batchtime") match {
+    val batchSize = commonConfig.get("spark.twitterPull.batchTime") match {
       case n: Number => n.longValue()
       case other => throw new ClassCastException(other + " not a Number")
     }

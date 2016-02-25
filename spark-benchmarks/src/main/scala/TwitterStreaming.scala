@@ -9,8 +9,8 @@ import kafka.serializer.StringDecoder
 import org.apache.spark.SparkConf
 import org.apache.spark.streaming.kafka.KafkaUtils
 import org.apache.spark.streaming.{Milliseconds, StreamingContext}
+
 import scala.collection.JavaConverters._
-import org.apache.log4j.{Level, Logger}
 
 object TwitterStreaming {
 
@@ -23,8 +23,8 @@ object TwitterStreaming {
     this.imap = imap
   }
 
-  Logger.getLogger("org").setLevel(Level.OFF)
-  Logger.getLogger("akka").setLevel(Level.OFF)
+//  Logger.getLogger("org").setLevel(Level.OFF)
+//  Logger.getLogger("akka").setLevel(Level.OFF)
 
   def main(args: Array[String]) {
     val commonConfig = Utils.findAndReadConfigFile(args(0), true).asInstanceOf[java.util.Map[String, Any]];
@@ -49,15 +49,15 @@ object TwitterStreaming {
       case s: String => s
       case other => throw new ClassCastException(other + " not a String")
     }
-    val batchSize = commonConfig.get("spark.batchtime") match {
+    val batchSize = commonConfig.get("spark.performance.batchTime") match {
       case n: Number => n.longValue()
       case other => throw new ClassCastException(other + " not a Number")
     }
-    val windowSize = commonConfig.get("spark.windowSize") match {
+    val windowSize = commonConfig.get("spark.performance.windowSize") match {
       case n: Number => n.longValue()
       case other => throw new ClassCastException(other + " not a Number")
     }
-    val checkPointPath = commonConfig.get("spark.checkPointPath") match {
+    val checkPointPath = commonConfig.get("spark.performance.checkPointPath") match {
       case s: String => s
       case other => throw new ClassCastException(other + " not a String")
     }
@@ -79,7 +79,7 @@ object TwitterStreaming {
     val sparkConf = new SparkConf()
       .setAppName("TwitterStreaming")
       .set("spark.eventLog.enabled","true")
-    .setMaster("local[*]")
+    //.setMaster("local[*]")
     //.set("spark.eventLog.dir","file:///tmp/spark-events")
 
     val ssc = new StreamingContext(sparkConf, Milliseconds(batchSize))

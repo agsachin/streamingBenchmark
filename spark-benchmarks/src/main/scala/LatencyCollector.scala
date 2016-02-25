@@ -28,7 +28,7 @@ class StopContextThread(ssc: StreamingContext) extends Runnable {
   }
 }
 
-class LatencyListener(ssc: StreamingContext,commonConfig : Map[_, _] ) extends StreamingListener {
+class LatencyListener(ssc: StreamingContext,commonConfig : Map[String, Any] ) extends StreamingListener {
 
   var startTime=0L
   var endTime=0L
@@ -40,14 +40,20 @@ class LatencyListener(ssc: StreamingContext,commonConfig : Map[_, _] ) extends S
 
   val thread: Thread = new Thread(new StopContextThread(ssc))
 
-  val batchSize = commonConfig.get("spark.batchtime") match {
+  val batchSize = commonConfig.get("spark.performance.batchTime") match {
     case n: Number => n.longValue()
     case other => throw new ClassCastException(other + " not a Number")
   }
-  val recordLimit = commonConfig.get("kafka.recordLimit") match {
+  val recordLimitPerThread = commonConfig.get("data.kafka.Loader.thread.recordLimit") match {
     case n: Number => n.longValue()
     case other => throw new ClassCastException(other + " not a Number")
   }
+  val loaderThreads = commonConfig.get("data.kafka.Loader.thread") match {
+    case n: Number => n.intValue()
+    case other => throw new ClassCastException(other + " not a Number")
+  }
+
+  val recordLimit=loaderThreads*recordLimitPerThread
 
   override def onBatchCompleted(batchCompleted: StreamingListenerBatchCompleted): Unit={
     val batchInfo = batchCompleted.batchInfo

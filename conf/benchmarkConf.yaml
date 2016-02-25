@@ -1,8 +1,7 @@
 # Copyright 2015, Yahoo Inc.
 # Licensed under the terms of the Apache License 2.0. Please see LICENSE file in the project root for terms.
 
-#kafka.brokers:
-#- "localhost"
+
 #
 #zookeeper.servers:
 #- "localhost"
@@ -21,21 +20,24 @@ storm.workers: 1
 storm.ackers: 2
 
 #Spark Specific
-spark.batchtime: 1000
-spark.windowSize: 60000
-spark.checkPointPath: "/tmp/checkpointPath/"
+spark.twitterPull.batchTime: 200000
+spark.performance.batchTime: 1000
+spark.performance.windowSize: 60000
+spark.performance.checkPointPath: "/tmp/checkpointPath/"
 
 
 kafka.serializer: "kafka.serializer.StringEncoder"
 kafka.requiredAcks: "1"
 kafka.partitions: 3
 kafka.topic: "ad-events2"
+#kafka.brokers:
+#    - "169.45.101.75"
+#    - "169.45.101.67"
+#    - "169.45.101.73"
 kafka.brokers:
-    - "169.45.101.75"
-    - "169.45.101.67"
-    - "169.45.101.73"
+    - "localhost"
 kafka.port: 9092
-kafka.recordLimit: 4641050
+
 
 twitter.consumerKey: "taVpGWVGyRiFnQDsNwPwITRcH"
 twitter.consumerSecret: "3UKCluIj3OuftNhfeXkIyoR0hd8fs2lhAV7Ki5OqGKMc84IpkJ"
@@ -43,10 +45,12 @@ twitter.accessToken: "145001241-n8zdD6gi71xWBC8v55eW7BIBQ2uizR21iUCzLGyu"
 twitter.accessTokenSecret: "kJsg01s3g9aKGNmbbNgLvzSgCkX0QY3QUbV8XqeWqOAxl"
 
 
-
-data.outputDirectory: "/tmp/output/tweets/3/"
 data.result.outputDirectory: "/tmp/data/result/"
-data.inputDirectory: "/tmp/data/tweet_dataset"
-data.numFilesPerPartition: 1
-data.tweetThreshold: 0
-data.receiverParallalism: 3
+data.twitter.outputDirectory: "/tmp/output/tweets/3/"
+data.twitter.write.numFilesPerPartition: 1
+data.twitter.tweet.threshold: 0
+data.twitter.receiver.parallalism: 2
+data.kafka.Loader.thread: 5
+data.kafka.inputDirectory: "/tmp/data/tweet_dataset"
+data.kafka.Loader.thread.recordLimit: 100000
+data.kafka.Loader.thread.awaitTime: 99999999
