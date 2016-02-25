@@ -90,7 +90,7 @@ object TwitterStreaming {
 
     val kafkaParams = Map[String, String]("metadata.broker.list" -> brokerListString.toString())
     System.err.println(
-      "Trying to connect to Kafka at " + kafkaBrokers)
+      "Trying to connect to Kafka at " + brokerListString.toString())
     val messages = KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder](
       ssc, kafkaParams, topicsSet)
 
