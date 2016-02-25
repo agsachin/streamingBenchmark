@@ -12,6 +12,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent._
 import scala.concurrent.duration._
 import scala.io.Source._
+import scala.util.{Success,Failure}
 
 /**
  * Created by sachin on 2/18/16.
@@ -88,16 +89,19 @@ object PushToKafka {
     val producer: Producer[String, String] = new Producer[String, String](config)
 
     def send(text: String) {
+      println("Executing task " + text)
       val data: KeyedMessage[String, String] = new KeyedMessage[String, String](topic, text)
       // println(text)
 
       producer.send(data);
     }
 
-    def read(): Long = {
+    def read(x:Long): Long = {
+      println("Executing task " + x)
       var count: Long = 0
-      while (count >= recordLimitPerThread)
+      while (count <= recordLimitPerThread)
         fromFile(inputDirectory).getLines.foreach(line => {
+          println("Executing task " + line)
           val text = new JsonParser().parse(line).getAsJsonObject().get("text")
           //println(text.getAsString)
           // Thread.sleep(1)
@@ -107,9 +111,15 @@ object PushToKafka {
       count
     }
 
-    val tasks: Seq[Future[Long]] = for (i <- 1 to loaderThreads) yield future {
-      println("Executing task " + i)
-      read()
+    val tasks: Seq[Future[Long]] = for (i <- 1 to loaderThreads) yield Future {
+      read(i)
+    }
+
+    for (task <-tasks){
+        task onComplete {
+          case Success(task) => println(task)
+          case Failure(t) => println("An error has occured: " + t.getMessage)
+        }
     }
 
     val aggregated: Future[Seq[Long]] = Future.sequence(tasks)
