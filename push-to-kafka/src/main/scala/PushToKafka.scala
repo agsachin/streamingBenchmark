@@ -94,25 +94,24 @@ object PushToKafka {
       producer.send(data);
     }
 
+    def read(): Long = {
+      var count: Long = 0
+      while (count >= recordLimitPerThread)
+        fromFile(inputDirectory).getLines.foreach(line => {
+          val text = new JsonParser().parse(line).getAsJsonObject().get("text")
+          //println(text.getAsString)
+          // Thread.sleep(1)
+          send(text.getAsString)
+          count += 1
+        })
+      count
+    }
 
     val tasks: Seq[Future[Long]] = for (i <- 1 to loaderThreads) yield future {
       println("Executing task " + i)
       read()
     }
-
-    def read(): Long = {
-      var count: Long = 0
-      while (count >= recordLimitPerThread)
-      fromFile(inputDirectory).getLines.foreach(line => {
-        val text = new JsonParser().parse(line).getAsJsonObject().get("text")
-        //println(text.getAsString)
-        // Thread.sleep(1)
-        send(text.getAsString)
-        count += 1
-      })
-      count
-    }
-
+    
     val aggregated: Future[Seq[Long]] = Future.sequence(tasks)
 
     val squares: Seq[Long] = Await.result(aggregated,awaitTimeForThread.seconds)
