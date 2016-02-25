@@ -21,7 +21,7 @@ storm.ackers: 2
 
 #Spark Specific
 spark.twitterPull.batchTime: 200000
-spark.performance.batchTime: 5000
+spark.performance.batchTime: 2000
 spark.performance.windowSize: 60000
 spark.performance.checkPointPath: "/tmp/checkpointPath/"
 
@@ -50,7 +50,7 @@ data.twitter.outputDirectory: "/tmp/output/tweets/3/"
 data.twitter.write.numFilesPerPartition: 1
 data.twitter.tweet.threshold: 0
 data.twitter.receiver.parallalism: 2
-data.kafka.Loader.thread: 10
+data.kafka.Loader.thread: 20
 data.kafka.inputDirectory: "/tmp/data/tweet_dataset"
 data.kafka.Loader.thread.recordLimit: 400000
 data.kafka.Loader.thread.awaitTime: 99999999

@@ -74,49 +74,27 @@ object PushToKafka {
     props.put("auto.offset.reset", "smallest")
     props.put("serializer.class", serializer)
     props.put("request.required.acks", requiredAcks)
-//    props.put("partitioner.class", "benchmark.common.kafkaPush.RandomPartitioner");
 
     val config: ProducerConfig = new ProducerConfig(props)
     val producer: Producer[String, String] = new Producer[String, String](config)
     val r = scala.util.Random
+    var thread: Array[Thread] = new Array[Thread](loaderThreads + 1)
 
 
     def sendTokafka(text: String) {
-      //println("Executing task " + text)
       val id = r.nextInt(kafkaPartitions)
-      val data: KeyedMessage[String, String] = new KeyedMessage[String, String](topic,id.toString, text )
-      // println(text)
-
+      val data: KeyedMessage[String, String] = new KeyedMessage[String, String](topic, id.toString, text)
       producer.send(data);
     }
 
-
-//
-//    def read(x:Long): Long = {
-//      println("Executing task " + x)
-//      var count: Long = 0
-//      while (count <= recordLimitPerThread)
-//        fromFile(inputDirectory).getLines.foreach(line => {
-//         // println("Executing task " + line)
-//          val text = new JsonParser().parse(line).getAsJsonObject().get("text")
-//          //println(text.getAsString)
-//          // Thread.sleep(1)
-//          send(text.getAsString)
-//          count += 1
-//        })
-//      count
-//    }
-
-    var thread:Array[Thread] = new Array[Thread](loaderThreads+1)
-
     for (i <- 1 to loaderThreads) {
-       thread(i) = new Thread {
+      thread(i) = new Thread {
         override def run {
           var count: Long = 0
           while (count <= recordLimitPerThread)
             fromFile(inputDirectory).getLines.foreach(line => {
               val text = new JsonParser().parse(line).getAsJsonObject().get("text")
-              println(i)
+              // println(i)
               sendTokafka(text.getAsString)
               count += 1
             })
@@ -124,26 +102,9 @@ object PushToKafka {
       }
       thread(i).start
     }
-    for (i <- 1 to loaderThreads){
+    for (i <- 1 to loaderThreads) {
       thread(i).join();
     }
-
-
-//    val tasks: Seq[Future[Long]] = for (i <- 1 to loaderThreads) yield Future {
-//      read(i)
-//    }
-//
-//    for (task <-tasks){
-//        task onComplete {
-//          case Success(task) => println(task)
-//          case Failure(t) => println("An error has occured: " + t.getMessage)
-//        }
-//    }
-//
-//    val aggregated: Future[Seq[Long]] = Future.sequence(tasks)
-//
-//    val result: Seq[Long] = Await.result(aggregated,awaitTimeForThread.seconds)
-//    println("DONE:"+result)
 
     producer.close()
   }
