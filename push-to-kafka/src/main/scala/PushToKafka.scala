@@ -89,7 +89,7 @@ object PushToKafka {
     val producer: Producer[String, String] = new Producer[String, String](config)
 
     def send(text: String) {
-      println("Executing task " + text)
+      //println("Executing task " + text)
       val data: KeyedMessage[String, String] = new KeyedMessage[String, String](topic, text)
       // println(text)
 
@@ -101,7 +101,7 @@ object PushToKafka {
       var count: Long = 0
       while (count <= recordLimitPerThread)
         fromFile(inputDirectory).getLines.foreach(line => {
-          println("Executing task " + line)
+         // println("Executing task " + line)
           val text = new JsonParser().parse(line).getAsJsonObject().get("text")
           //println(text.getAsString)
           // Thread.sleep(1)
