@@ -111,10 +111,12 @@ object PushToKafka {
       println("Executing task " + i)
       read()
     }
-    
+
     val aggregated: Future[Seq[Long]] = Future.sequence(tasks)
 
-    val squares: Seq[Long] = Await.result(aggregated,awaitTimeForThread.seconds)
+    val result: Seq[Long] = Await.result(aggregated,awaitTimeForThread.seconds)
+    println("DONE:"+result)
+
     producer.close()
   }
 }
