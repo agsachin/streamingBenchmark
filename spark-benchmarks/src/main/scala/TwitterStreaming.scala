@@ -10,6 +10,7 @@ import org.apache.spark.SparkConf
 import org.apache.spark.streaming.kafka.KafkaUtils
 import org.apache.spark.streaming.{Milliseconds, StreamingContext}
 import scala.collection.JavaConverters._
+import org.apache.log4j.{Level, Logger}
 
 object TwitterStreaming {
 
@@ -21,6 +22,9 @@ object TwitterStreaming {
   def setMap(imap: scala.collection.mutable.Map[String, Long]) = synchronized {
     this.imap = imap
   }
+
+  Logger.getLogger("org").setLevel(Level.OFF)
+  Logger.getLogger("akka").setLevel(Level.OFF)
 
   def main(args: Array[String]) {
     val commonConfig = Utils.findAndReadConfigFile(args(0), true).asInstanceOf[java.util.Map[String, Any]];
