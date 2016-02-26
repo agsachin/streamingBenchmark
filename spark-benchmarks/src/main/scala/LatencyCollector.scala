@@ -28,17 +28,27 @@ class StopContextThread(ssc: StreamingContext) extends Runnable {
   }
 }
 
-class LatencyListener(ssc: StreamingContext,commonConfig : Map[String, Any] ) extends StreamingListener {
 
-  var startTime=0L
-  var endTime=0L
-  //This delay is processDelay of every batch * record count in this batch
-  var totalDelay=0L
-  var hasStarted=false
-  var batchCount=0
-  var totalRecords=0L
+class LatencyListener(ssc: StreamingContext, commonConfig: Map[String, Any]) extends StreamingListener {
 
+  var metricMap: scala.collection.mutable.Map[String, Object] = _
+  var startTime = 0L
+  var endTime = 0L
+  var totalDelay = 0L
+  var hasStarted = false
+  var batchCount = 0
+  var totalRecords = 0L
   val thread: Thread = new Thread(new StopContextThread(ssc))
+
+
+  def getMap(): scala.collection.mutable.Map[String, Object] = synchronized {
+    if (metricMap == null) metricMap = scala.collection.mutable.Map()[String, Object]
+    metricMap
+  }
+
+  def setMap(metricMap: scala.collection.mutable.Map[String, Object]) = synchronized {
+    this.metricMap = metricMap
+  }
 
   val batchSize = commonConfig.get("spark.performance.batchTime") match {
     case n: Number => n.longValue()
@@ -53,43 +63,52 @@ class LatencyListener(ssc: StreamingContext,commonConfig : Map[String, Any] ) ex
     case other => throw new ClassCastException(other + " not a Number")
   }
 
-  val recordLimit=loaderThreads*recordLimitPerThread
+  val recordLimit = loaderThreads * recordLimitPerThread
 
-  override def onBatchCompleted(batchCompleted: StreamingListenerBatchCompleted): Unit={
+  override def onBatchCompleted(batchCompleted: StreamingListenerBatchCompleted): Unit = {
     val batchInfo = batchCompleted.batchInfo
-    val prevCount=totalRecords
+    val prevCount = totalRecords
     var recordThisBatch = batchInfo.numRecords
 
     if (!thread.isAlive) {
       totalRecords += recordThisBatch
-      println("LatencyController:    batchCount so far: " + batchCount)
-      println("LatencyController:    batchTime: " + batchInfo.batchTime)
-      println("LatencyController:    submissionTime: " + batchInfo.submissionTime)
-      println("LatencyController:    processingStartTime: " + batchInfo.processingStartTime)
-      println("LatencyController:    processingEndTime: " + batchInfo.processingEndTime)
-      println("LatencyController:    schedulingDelay: " + batchInfo.schedulingDelay)
-      println("LatencyController:    processingDelay: " + batchInfo.processingDelay)
-      println("LatencyController:    recordThisBatch: " + recordThisBatch)
-      println("LatencyController:    total records: " + totalRecords)
-    }
+      val imap = getMap
+      imap(batchInfo.batchTime.toString()) = "batchTime" + batchInfo.batchTime +
+        ",batch Count so far" + batchCount +
+        ".total Records so far" + totalRecords +
+        ",record This Batch" + recordThisBatch +
+        ",submission Time" + batchInfo.submissionTime +
+        ",processing Start Time" + batchInfo.processingStartTime +
+        ",processing End Time" + batchInfo.processingEndTime +
+        ",scheduling Delay" + batchInfo.schedulingDelay +
+        ",processing Delay" + batchInfo.processingDelay
+
+      setMap(imap)
+   }
 
     if (totalRecords >= recordLimit) {
       if (hasStarted && !thread.isAlive) {
         //not receiving any data more, finish
         endTime = System.currentTimeMillis()
-        val totalTime = (endTime-startTime).toDouble/1000
+        val totalTime = (endTime - startTime).toDouble / 1000
         //This is weighted avg of every batch process time. The weight is records processed int the batch
-        val avgLatency = totalDelay.toDouble/totalRecords
+        val avgLatency = totalDelay.toDouble / totalRecords
         if (avgLatency > batchSize.toDouble)
           println("WARNING:SPARK CLUSTER IN UNSTABLE STATE. TRY REDUCE INPUT SPEED")
 
         val avgLatencyAdjust = avgLatency + batchSize.toDouble
         val recordThroughput = recordLimit / totalTime
-        println("Batch count = " + batchCount)
-        println("Total processing delay = " + totalDelay + " ms")
-        println("Consumed time = " + totalTime + " s")
-        println("Avg latency/batchInterval = " + avgLatencyAdjust + " ms")
-        println("Avg records/sec = " + recordThroughput + " records/s")
+
+        val imap = getMap
+
+        imap("Final Metric") = "Total Batch count = " + batchCount+
+        ", Total processing delay = " + totalDelay + " ms "+
+        ", Total Consumed time = " + totalTime + " s " +
+        ", Avg latency/batchInterval = " + avgLatencyAdjust + " ms "+
+        ", Avg records/sec = " + recordThroughput + " records/s "
+
+        imap.foreach {case (key, value) => println(key + "-->" + value)}
+
         thread.start
       }
     } else if (!hasStarted) {
@@ -98,12 +117,12 @@ class LatencyListener(ssc: StreamingContext,commonConfig : Map[String, Any] ) ex
     }
 
     if (hasStarted) {
-//      println("This delay:"+batchCompleted.batchInfo.processingDelay+"ms")
+      //      println("This delay:"+batchCompleted.batchInfo.processingDelay+"ms")
       batchCompleted.batchInfo.processingDelay match {
-        case Some(value) => totalDelay += value*recordThisBatch
-        case None =>  //Nothing
+        case Some(value) => totalDelay += value * recordThisBatch
+        case None => //Nothing
       }
-      batchCount = batchCount+1
+      batchCount = batchCount + 1
     }
   }
 

@@ -23,8 +23,8 @@ object TwitterStreaming {
     this.imap = imap
   }
 
-//  Logger.getLogger("org").setLevel(Level.OFF)
-//  Logger.getLogger("akka").setLevel(Level.OFF)
+  //  Logger.getLogger("org").setLevel(Level.OFF)
+  //  Logger.getLogger("akka").setLevel(Level.OFF)
 
   def main(args: Array[String]) {
     val commonConfig = Utils.findAndReadConfigFile(args(0), true).asInstanceOf[java.util.Map[String, Any]];
@@ -62,7 +62,7 @@ object TwitterStreaming {
       case other => throw new ClassCastException(other + " not a String")
     }
     //  val kafkaHosts = "localhost:9092,localhost:9093,localhost:9094";
-   // val topicsSet = topics.split(",").toSet
+    // val topicsSet = topics.split(",").toSet
     val topicsSet = Set(topic)
 
     val brokerListString = new StringBuilder();
@@ -73,7 +73,7 @@ object TwitterStreaming {
       }
       brokerListString.append(host).append(":").append(kafkaPort)
     }
-   // val brokerListString = joinHosts(kafkaBrokers, kafkaPort)
+    // val brokerListString = joinHosts(kafkaBrokers, kafkaPort)
 
 
     val sparkConf = new SparkConf()
@@ -100,20 +100,13 @@ object TwitterStreaming {
       .map { case (topic, count) => (count, topic) }
       .transform(_.sortByKey(false))
 
-    //topCounts60.persist(StorageLevel.DISK_ONLY)
-
-
-
-    topCounts60.foreachRDD(rdd=> {
-        rdd.foreachPartition(partitionOfRecords => {
-          val imap = getMap
-          partitionOfRecords.foreach{case (count, tag) =>
-            imap(tag) = if (imap.contains(tag)) imap(tag) + count else count
-          }
-          setMap(imap)
-        })
-      })
-
+    topCounts60.foreachRDD(rdd=> {val topList = rdd.take(10)
+      val imap = getMap
+      topList.foreach{case (count, tag) =>
+        imap(tag) = if (imap.contains(tag)) imap(tag) + count else count
+      }
+      setMap(imap)
+    })
 
     sys.ShutdownHookThread {
       println("Gracefully stopping Spark Streaming Application")
@@ -121,13 +114,13 @@ object TwitterStreaming {
       println("Application stopped")
     }
 
-//    topCounts60.foreachRDD(rdd => {
-//      val topList = rdd.take(10)
-//      topList.foreach { case (count, tag) => println("%s (%s tweets)".format(tag, count)) }
-//    })
+    //    topCounts60.foreachRDD(rdd => {
+    //      val topList = rdd.take(10)
+    //      topList.foreach { case (count, tag) => println("%s (%s tweets)".format(tag, count)) }
+    //    })
 
     ssc.start()
     ssc.awaitTermination()
-   }
+  }
 
 }

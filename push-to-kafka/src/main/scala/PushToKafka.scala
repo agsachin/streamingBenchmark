@@ -76,28 +76,32 @@ object PushToKafka {
     props.put("request.required.acks", requiredAcks)
 
     val config: ProducerConfig = new ProducerConfig(props)
-    val producer: Producer[String, String] = new Producer[String, String](config)
-    val r = scala.util.Random
-    var thread: Array[Thread] = new Array[Thread](loaderThreads + 1)
+//    val producer: Producer[String, String] = new Producer[String, String](config)
+//    val r = scala.util.Random
+   var thread: Array[Thread] = new Array[Thread](loaderThreads + 1)
 
 
     def sendTokafka(text: String) {
-      val id = r.nextInt(kafkaPartitions)
-      val data: KeyedMessage[String, String] = new KeyedMessage[String, String](topic, id.toString, text)
-      producer.send(data);
+
     }
 
     for (i <- 1 to loaderThreads) {
       thread(i) = new Thread {
         override def run {
+          val producer: Producer[String, String] = new Producer[String, String](config)
+          val r = scala.util.Random
           var count: Long = 0
           while (count <= recordLimitPerThread)
             fromFile(inputDirectory).getLines.foreach(line => {
               val text = new JsonParser().parse(line).getAsJsonObject().get("text")
               // println(i)
-              sendTokafka(text.getAsString)
+              //sendTokafka(text.getAsString)
+              val id = r.nextInt(kafkaPartitions)
+              val data: KeyedMessage[String, String] = new KeyedMessage[String, String](topic, id.toString, text.toString)
+              producer.send(data);
               count += 1
             })
+          producer.close()
         }
       }
       thread(i).start
@@ -105,7 +109,5 @@ object PushToKafka {
     for (i <- 1 to loaderThreads) {
       thread(i).join();
     }
-
-    producer.close()
   }
 }
