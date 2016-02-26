@@ -74,14 +74,14 @@ class LatencyListener(ssc: StreamingContext, commonConfig: Map[String, Any]) ext
       totalRecords += recordThisBatch
       val imap = getMap
       imap(batchInfo.batchTime.toString()) = "batchTime" + batchInfo.batchTime +
-        ",batch Count so far" + batchCount +
-        ".total Records so far" + totalRecords +
-        ",record This Batch" + recordThisBatch +
-        ",submission Time" + batchInfo.submissionTime +
-        ",processing Start Time" + batchInfo.processingStartTime +
-        ",processing End Time" + batchInfo.processingEndTime +
-        ",scheduling Delay" + batchInfo.schedulingDelay +
-        ",processing Delay" + batchInfo.processingDelay
+        ", batch Count so far" + batchCount +
+        ", total Records so far" + totalRecords +
+        ", record This Batch" + recordThisBatch +
+        ", submission Time" + batchInfo.submissionTime +
+        ", processing Start Time" + batchInfo.processingStartTime +
+        ", processing End Time" + batchInfo.processingEndTime +
+        ", scheduling Delay" + batchInfo.schedulingDelay +
+        ", processing Delay" + batchInfo.processingDelay
 
       setMap(imap)
    }
@@ -97,11 +97,12 @@ class LatencyListener(ssc: StreamingContext, commonConfig: Map[String, Any]) ext
           println("WARNING:SPARK CLUSTER IN UNSTABLE STATE. TRY REDUCE INPUT SPEED")
 
         val avgLatencyAdjust = avgLatency + batchSize.toDouble
-        val recordThroughput = recordLimit / totalTime
+        val recordThroughput = totalRecords / totalTime
 
         val imap = getMap
 
-        imap("Final Metric") = "Total Batch count = " + batchCount+
+        imap("Final Metric") = " Total Batch count = " + batchCount+
+        ", Total Records = "+totalRecords+
         ", Total processing delay = " + totalDelay + " ms "+
         ", Total Consumed time = " + totalTime + " s " +
         ", Avg latency/batchInterval = " + avgLatencyAdjust + " ms "+

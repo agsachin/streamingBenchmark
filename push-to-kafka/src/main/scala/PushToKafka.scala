@@ -47,10 +47,6 @@ object PushToKafka {
       case n: Number => n.longValue()
       case other => throw new ClassCastException(other + " not a Number")
     }
-    val awaitTimeForThread = commonConfig.get("data.kafka.Loader.thread.awaitTime") match {
-      case n: Number => n.longValue()
-      case other => throw new ClassCastException(other + " not a Number")
-    }
     val loaderThreads = commonConfig.get("data.kafka.Loader.thread") match {
       case n: Number => n.intValue()
       case other => throw new ClassCastException(other + " not a Number")
@@ -78,24 +74,44 @@ object PushToKafka {
     val config: ProducerConfig = new ProducerConfig(props)
 //    val producer: Producer[String, String] = new Producer[String, String](config)
 //    val r = scala.util.Random
-   var thread: Array[Thread] = new Array[Thread](loaderThreads + 1)
+    var thread: Array[Thread] = new Array[Thread](loaderThreads + 1)
 
+val printThread = new Thread {
+  override def run: Unit = {
+    while (true) {
+      var prevOffSet:Long=0;
+      val threadId: Long = Thread.currentThread().getId();
+      println("thread=" + threadId)
+      for (i <- 1 to kafkaPartitions) {
+        val offSet: Long = SimpleExample.offSet(topic, i, kafkaBrokers.asJava, kafkaPort.toInt)
+        if (offSet == 0) {
+          System.out.println("Can't find offSet for Topic and Partition. Exiting")
+          return
+        }
+        println("partition=" + i + " and offset=" + offSet +"and record sent in this one are "+(prevOffSet - offSet))
+        prevOffSet=offSet;
 
-    def sendTokafka(text: String) {
-
+        Thread.sleep(1000)
+      }
     }
+  }
+}
+//
+//}
+//    def sendTokafka(text: String) {
+//
+//    }
 
     for (i <- 1 to loaderThreads) {
       thread(i) = new Thread {
         override def run {
+          val threadId:Long = Thread.currentThread().getId();
           val producer: Producer[String, String] = new Producer[String, String](config)
           val r = scala.util.Random
           var count: Long = 0
           while (count <= recordLimitPerThread)
             fromFile(inputDirectory).getLines.foreach(line => {
               val text = new JsonParser().parse(line).getAsJsonObject().get("text")
-              // println(i)
-              //sendTokafka(text.getAsString)
               val id = r.nextInt(kafkaPartitions)
               val data: KeyedMessage[String, String] = new KeyedMessage[String, String](topic, id.toString, text.toString)
               producer.send(data);
@@ -104,6 +120,7 @@ object PushToKafka {
           producer.close()
         }
       }
+
       thread(i).start
     }
     for (i <- 1 to loaderThreads) {

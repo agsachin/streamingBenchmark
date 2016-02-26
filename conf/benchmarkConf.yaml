@@ -30,12 +30,12 @@ kafka.serializer: "kafka.serializer.StringEncoder"
 kafka.requiredAcks: "1"
 kafka.partitions: 9
 kafka.topic: "ad-events2"
-kafka.brokers:
-    - "169.45.101.75"
-    - "169.45.101.67"
-    - "169.45.101.73"
 #kafka.brokers:
-#    - "localhost"
+#    - "169.45.101.75"
+#    - "169.45.101.67"
+#    - "169.45.101.73"
+kafka.brokers:
+    - "localhost"
 kafka.port: 9092
 
 
@@ -51,6 +51,5 @@ data.twitter.write.numFilesPerPartition: 1
 data.twitter.tweet.threshold: 0
 data.twitter.receiver.parallalism: 2
 data.kafka.Loader.thread: 20
+data.kafka.Loader.thread.recordLimit: 100
 data.kafka.inputDirectory: "/tmp/data/tweet_dataset"
-data.kafka.Loader.thread.recordLimit: 400000
-data.kafka.Loader.thread.awaitTime: 99999999
