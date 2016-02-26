@@ -8,7 +8,7 @@ import com.google.gson.JsonParser
 import kafka.producer.{KeyedMessage, Producer, ProducerConfig}
 
 import scala.collection.JavaConverters._
-import scala.io.Source._
+import scala.io.Source
 
 /**
  * Created by sachin on 2/18/16.
@@ -96,17 +96,20 @@ object PushToKafka {
             }
           }
           printThread.start()
+          var flag=true
 
-          while (count <= recordLimitPerThread) {
-            fromFile(inputDirectory).getLines.foreach(line => {
-              val text = new JsonParser().parse(line).getAsJsonObject().get("text")
-              val id = r.nextInt(kafkaPartitions)
-              val data: KeyedMessage[String, String] = new KeyedMessage[String, String](topic, id.toString, text.toString)
-              producer.send(data);
-              count += 1
+          val bufferedSource = Source.fromFile("example.txt")
+          for ( line <- bufferedSource.getLines
+            if count <= recordLimitPerThread-1
+            ) {
+            val text = new JsonParser().parse(line).getAsJsonObject().get("text")
+            val id = r.nextInt(kafkaPartitions)
+            val data: KeyedMessage[String, String] = new KeyedMessage[String, String](topic, id.toString, text.toString)
 
-            })
+            producer.send(data)
+            count += 1
           }
+          bufferedSource.close
           producer.close()
         }
       }
@@ -118,6 +121,22 @@ object PushToKafka {
     }
   }
 }
+
+
+//          while (flag) {
+//            fromFile(inputDirectory).getLines.foreach(line => {
+//              val text = new JsonParser().parse(line).getAsJsonObject().get("text")
+//              val id = r.nextInt(kafkaPartitions)
+//              val data: KeyedMessage[String, String] = new KeyedMessage[String, String](topic, id.toString, text.toString)
+//
+//              count += 1
+//              if (count <= recordLimitPerThread){
+//                producer.send(data)
+//              }else{
+//                flag=false
+//              }
+//            })
+//          }
 
 
 //val printThread = new Thread {
