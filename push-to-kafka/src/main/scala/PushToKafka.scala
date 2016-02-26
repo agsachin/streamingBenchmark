@@ -85,10 +85,12 @@ object PushToKafka {
           val r = scala.util.Random
           var count: Long = 0
 
-          val printThread= new Thread() {
+          val printThread = new Thread() {
             override def run {
-              println("threadId:" + threadId + "count:" + count)
-              Thread.sleep(1000)
+              while(thread(i).isAlive) {
+                println("threadId:" + threadId + "count:" + count)
+                Thread.sleep(1000)
+              }
             }
           }
           printThread.start()
@@ -100,6 +102,7 @@ object PushToKafka {
               val data: KeyedMessage[String, String] = new KeyedMessage[String, String](topic, id.toString, text.toString)
               producer.send(data);
               count += 1
+
             })
           producer.close()
         }
