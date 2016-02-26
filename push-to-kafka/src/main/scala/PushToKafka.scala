@@ -86,9 +86,11 @@ object PushToKafka {
           var count: Long = 0
 
           val printThread = new Thread() {
+            var prevCount:Long=0
             override def run {
               while (thread(i).isAlive) {
-                println("threadId:" + threadId + "count:" + count)
+                println("threadId:" + threadId + "count:" + count+"event in this run = "+(count-prevCount))
+                prevCount = count
                 Thread.sleep(1000)
               }
             }
