@@ -52,4 +52,4 @@ data.twitter.tweet.threshold: 0
 data.twitter.receiver.parallalism: 2
 data.kafka.Loader.thread: 10
 data.kafka.Loader.thread.recordLimit: 100000
-data.kafka.inputDirectory: "/tmp/data/tweet_dataset"
+data.kafka.inputFile: "/tmp/data/tweet_dataset"

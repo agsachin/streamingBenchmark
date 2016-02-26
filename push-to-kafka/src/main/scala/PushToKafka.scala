@@ -30,7 +30,7 @@ object PushToKafka {
       case s: String => s
       case other => throw new ClassCastException(other + " not a String")
     }
-    val inputDirectory = commonConfig.get("data.kafka.inputDirectory") match {
+    val inputFile = commonConfig.get("data.kafka.inputFile") match {
       case s: String => s
       case other => throw new ClassCastException(other + " not a String")
     }
@@ -98,7 +98,7 @@ object PushToKafka {
           printThread.start()
           var flag=true
 
-          val bufferedSource = Source.fromFile("example.txt")
+          val bufferedSource = Source.fromFile(inputFile)
           for ( line <- bufferedSource.getLines
             if count <= recordLimitPerThread-1
             ) {
