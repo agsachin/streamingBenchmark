@@ -30,12 +30,12 @@ kafka.serializer: "kafka.serializer.StringEncoder"
 kafka.requiredAcks: "1"
 kafka.partitions: 9
 kafka.topic: "ad-events2"
-#kafka.brokers:
-#    - "169.45.101.75"
-#    - "169.45.101.67"
-#    - "169.45.101.73"
 kafka.brokers:
-    - "localhost"
+    - "169.45.101.75"
+    - "169.45.101.67"
+    - "169.45.101.73"
+#kafka.brokers:
+#    - "localhost"
 kafka.port: 9092
 
 
