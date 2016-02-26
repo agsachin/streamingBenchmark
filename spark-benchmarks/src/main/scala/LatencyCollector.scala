@@ -42,7 +42,7 @@ class LatencyListener(ssc: StreamingContext, commonConfig: Map[String, Any]) ext
 
 
   def getMap(): scala.collection.mutable.Map[String, Object] = synchronized {
-    if (metricMap == null) metricMap = scala.collection.mutable.Map()[String, Object]
+    if (metricMap == null) metricMap = scala.collection.mutable.Map()
     metricMap
   }
 
