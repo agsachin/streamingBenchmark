@@ -51,5 +51,5 @@ data.twitter.write.numFilesPerPartition: 1
 data.twitter.tweet.threshold: 0
 data.twitter.receiver.parallalism: 2
 data.kafka.Loader.thread: 20
-data.kafka.Loader.thread.recordLimit: 100
+data.kafka.Loader.thread.recordLimit: 10000
 data.kafka.inputDirectory: "/tmp/data/tweet_dataset"
