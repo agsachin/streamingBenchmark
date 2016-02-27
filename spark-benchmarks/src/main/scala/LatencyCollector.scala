@@ -113,8 +113,10 @@ class LatencyListener(ssc: StreamingContext, commonConfig: Map[String, Any]) ext
         thread.start
       }
     } else if (!hasStarted) {
-      startTime = batchCompleted.batchInfo.submissionTime
-      hasStarted = true
+      if (batchInfo.numRecords>0) {
+        startTime = batchCompleted.batchInfo.submissionTime
+        hasStarted = true
+      }
     }
 
     if (hasStarted) {

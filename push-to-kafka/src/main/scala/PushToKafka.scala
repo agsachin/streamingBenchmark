@@ -69,8 +69,8 @@ object PushToKafka {
     props.put("metadata.broker.list", brokerListString.toString())
     props.put("auto.offset.reset", "smallest")
     props.put("serializer.class", serializer)
-    props.put("request.required.acks", requiredAcks)
-
+//    props.put("request.required.acks", requiredAcks)
+//
     val config: ProducerConfig = new ProducerConfig(props)
     //    val producer: Producer[String, String] = new Producer[String, String](config)
     //    val r = scala.util.Random
@@ -105,7 +105,6 @@ object PushToKafka {
             val text = new JsonParser().parse(line).getAsJsonObject().get("text")
             val id = r.nextInt(kafkaPartitions)
             val data: KeyedMessage[String, String] = new KeyedMessage[String, String](topic, id.toString, text.toString)
-
             producer.send(data)
             count += 1
           }
