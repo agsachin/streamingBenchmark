@@ -38,18 +38,25 @@ kafka.brokers:
 #    - "localhost"
 kafka.port: 9092
 
-
 twitter.consumerKey: "taVpGWVGyRiFnQDsNwPwITRcH"
 twitter.consumerSecret: "3UKCluIj3OuftNhfeXkIyoR0hd8fs2lhAV7Ki5OqGKMc84IpkJ"
 twitter.accessToken: "145001241-n8zdD6gi71xWBC8v55eW7BIBQ2uizR21iUCzLGyu"
 twitter.accessTokenSecret: "kJsg01s3g9aKGNmbbNgLvzSgCkX0QY3QUbV8XqeWqOAxl"
-
 
 data.result.outputDirectory: "/tmp/data/result/"
 data.twitter.outputDirectory: "/tmp/output/tweets/3/"
 data.twitter.write.numFilesPerPartition: 1
 data.twitter.tweet.threshold: 0
 data.twitter.receiver.parallalism: 2
-data.kafka.Loader.thread: 20
-data.kafka.Loader.thread.recordLimit: 50000
+data.kafka.Loader.thread: 5
+data.kafka.Loader.thread.recordLimit: 20000000
 data.kafka.inputFile: "/tmp/data/tweet_dataset"
+
+#100,000,000
+#round,threads,recordLimit
+#1 5 20,000,000
+#2 10 10,000,000
+#3 15 6,666,667
+#4 20 5,000,000
+#5 25 4,000,000
+#6 30 3,333,334

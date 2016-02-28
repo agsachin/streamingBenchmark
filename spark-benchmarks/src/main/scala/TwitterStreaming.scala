@@ -6,6 +6,7 @@ package spark.benchmark
 
 import benchmark.common.Utils
 import kafka.serializer.StringDecoder
+import org.apache.log4j.{Level, Logger}
 import org.apache.spark.SparkConf
 import org.apache.spark.streaming.kafka.KafkaUtils
 import org.apache.spark.streaming.{Milliseconds, StreamingContext}
@@ -23,8 +24,8 @@ object TwitterStreaming {
     this.imap = imap
   }
 
-  //  Logger.getLogger("org").setLevel(Level.OFF)
-  //  Logger.getLogger("akka").setLevel(Level.OFF)
+    Logger.getLogger("org").setLevel(Level.OFF)
+    Logger.getLogger("akka").setLevel(Level.OFF)
 
   def main(args: Array[String]) {
     val commonConfig = Utils.findAndReadConfigFile(args(0), true).asInstanceOf[java.util.Map[String, Any]];
