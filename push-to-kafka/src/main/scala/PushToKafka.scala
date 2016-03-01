@@ -69,8 +69,8 @@ object PushToKafka {
     props.put("metadata.broker.list", brokerListString.toString())
     props.put("auto.offset.reset", "smallest")
     props.put("serializer.class", serializer)
-//    props.put("request.required.acks", requiredAcks)
-//
+    props.put("request.required.acks", requiredAcks)
+
     val config: ProducerConfig = new ProducerConfig(props)
     //    val producer: Producer[String, String] = new Producer[String, String](config)
     //    val r = scala.util.Random
@@ -84,6 +84,9 @@ object PushToKafka {
           val producer: Producer[String, String] = new Producer[String, String](config)
           val r = scala.util.Random
           var count: Long = 0
+          val bufferedSource = Source.fromFile(inputFile)
+          val line = bufferedSource.getLines
+          val jsonParser=new JsonParser();
 
           val printThread = new Thread() {
             var prevCount:Long=0
@@ -96,18 +99,16 @@ object PushToKafka {
             }
           }
           printThread.start()
-          var flag=true
 
-          val bufferedSource = Source.fromFile(inputFile)
-          for ( line <- bufferedSource.getLines
-            if count <= recordLimitPerThread-1
-            ) {
-            val text = new JsonParser().parse(line).getAsJsonObject().get("text")
-            val id = r.nextInt(kafkaPartitions)
-            val data: KeyedMessage[String, String] = new KeyedMessage[String, String](topic, id.toString, text.toString)
-            producer.send(data)
-            count += 1
-          }
+          println("threadId:"+threadId+", StartTime:"+java.lang.System.currentTimeMillis())
+            for (i<-1L to recordLimitPerThread){
+              val text = jsonParser.parse(line.next()).getAsJsonObject().get("text")
+              val id = r.nextInt(kafkaPartitions)
+              val data: KeyedMessage[String, String] = new KeyedMessage[String, String](topic, id.toString, text.toString)
+              producer.send(data)
+              count=i;
+            }
+          println("EndTime:"+java.lang.System.currentTimeMillis())
           bufferedSource.close
           producer.close()
         }
