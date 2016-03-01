@@ -101,15 +101,25 @@ object PushToKafka {
           printThread.start()
 
           println("threadId:"+threadId+", StartTime:"+java.lang.System.currentTimeMillis())
-            for (i<-1L to recordLimitPerThread){
-              val text = jsonParser.parse(line.next()).getAsJsonObject().get("text")
+//            for (i<-1L to recordLimitPerThread){
+//              val text = jsonParser.parse(line.next()).getAsJsonObject().get("text")
+//              val id = r.nextInt(kafkaPartitions)
+//              val data: KeyedMessage[String, String] = new KeyedMessage[String, String](topic, id.toString, text.toString)
+//              producer.send(data)
+//              count=i;
+//            }
+          for ( line <- bufferedSource.getLines) {
+            if (count <= recordLimitPerThread-1) {
+              val text = jsonParser.parse(line).getAsJsonObject().get("text")
               val id = r.nextInt(kafkaPartitions)
               val data: KeyedMessage[String, String] = new KeyedMessage[String, String](topic, id.toString, text.toString)
               producer.send(data)
-              count=i;
+            }else{
+              bufferedSource.close
             }
+            count += 1
+          }
           println("EndTime:"+java.lang.System.currentTimeMillis())
-          bufferedSource.close
           producer.close()
         }
       }
