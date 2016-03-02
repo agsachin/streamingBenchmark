@@ -99,8 +99,8 @@ object PushToKafka {
             }
           }
           printThread.start()
-
-          println("threadId:"+threadId+", StartTime:"+java.lang.System.currentTimeMillis())
+          val startTime = java.lang.System.currentTimeMillis()
+          println("threadId:"+threadId+", StartTime:"+ startTime)
 //            for (i<-1L to recordLimitPerThread){
 //              val text = jsonParser.parse(line.next()).getAsJsonObject().get("text")
 //              val id = r.nextInt(kafkaPartitions)
@@ -108,7 +108,7 @@ object PushToKafka {
 //              producer.send(data)
 //              count=i;
 //            }
-          for ( line <- bufferedSource.getLines) {
+          bufferedSource.getLines.foreach(line => {
             if (count <= recordLimitPerThread-1) {
               val text = jsonParser.parse(line).getAsJsonObject().get("text")
               val id = r.nextInt(kafkaPartitions)
@@ -118,8 +118,10 @@ object PushToKafka {
               bufferedSource.close
             }
             count += 1
-          }
-          println("EndTime:"+java.lang.System.currentTimeMillis())
+          })
+          val endTime=java.lang.System.currentTimeMillis()
+          println("EndTime:"+endTime)
+          println("Time taken by job:"+(endTime-startTime))
           producer.close()
         }
       }
