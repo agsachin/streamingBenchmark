@@ -113,7 +113,7 @@ object PushToKafka {
               val text = jsonParser.parse(line).getAsJsonObject().get("text")
               val id = r.nextInt(kafkaPartitions)
               val data: KeyedMessage[String, String] = new KeyedMessage[String, String](topic, id.toString, text.toString)
-              producer.send(data)
+             producer.send(data)
             }else{
               bufferedSource.close
             }
