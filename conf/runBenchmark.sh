@@ -1,5 +1,4 @@
-#!/usr/bin/env bash
-
+#!/bin/bash
 
 echo "**********move to home directory**********"
 cd ;
@@ -299,15 +298,21 @@ fi
 
 }
 
-for var in "$@"
-do
-   case $var in
+   case $1 in
         "--killSparkBenchmarkJob" )
           killSparkBenchmarkJob;;
         "--runSparkSubmit" )
-          runSparkSubmit 1 2000 30 3333334;;
+        if [ $# -eq 5 ]; then
+             runSparkSubmit $2 $3 $4 $5
+        else
+            echo "invalid argument please pass processId,performanceBatchTime,kafkaLoaderThread,kafkaLoaderThreadLimit"
+        fi;;
         "--runPushToKafka" )
-          runPushToKafka 1 2000 30 3333334;;
+        if [ $# -eq 5 ]; then
+             runPushToKafka $2 $3 $4 $5
+        else
+            echo "invalid argument please pass processId,performanceBatchTime,kafkaLoaderThread,kafkaLoaderThreadLimit"
+        fi;;
         "--startKafka" )
           startKafka;;
         "--startZookeper" )
@@ -317,12 +322,15 @@ do
         "--restartKafkaCluster" )
           cleanKafka;startZookeper;startKafka;;
           *)
-            echo $"Usage: $0 {--restartKafkaCluster (cleanKafka,startZookeper,startKafka)|--killSparkBenchmarkJob|--runSparkSubmit|--runPushToKafka|--startKafka|--startZookeper|--cleanKafka}"
+            echo $"Usage: $0 {
+            --restartKafkaCluster (all steps: cleanKafka,startZookeper,startKafka)
+            --killSparkBenchmarkJob
+            --runSparkSubmit processId performanceBatchTime kafkaLoaderThread kafkaLoaderThreadLimit
+            --runPushToKafka processId performanceBatchTime kafkaLoaderThread kafkaLoaderThreadLimit
+            --startKafka
+            --startZookeper
+            --cleanKafka
+            }"
             exit 1
     esac
-done
 
-#killSparkBenchmarkJob
-#runSparkSubmit 1 2000 30 3333334
-#runPushToKafka 1 2000 30 3333334
-#mv /Users/sachin/Documents/github/streamingBenchmark/conf/benchmarkConf.yaml-e /Users/sachin/Documents/github/streamingBenchmark/conf/benchmarkConf.yaml
