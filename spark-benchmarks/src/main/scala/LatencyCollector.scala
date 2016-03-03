@@ -90,11 +90,12 @@ class LatencyListener(ssc: StreamingContext, commonConfig: Map[String, Any]) ext
       if (hasStarted && !thread.isAlive) {
         //not receiving any data more, finish
         endTime = System.currentTimeMillis()
+        var warning=""
         val totalTime = (endTime - startTime).toDouble / 1000
         //This is weighted avg of every batch process time. The weight is records processed int the batch
         val avgLatency = totalDelay.toDouble / totalRecords
         if (avgLatency > batchSize.toDouble)
-          val warning="WARNING:SPARK CLUSTER IN UNSTABLE STATE. TRY REDUCE INPUT SPEED"
+          warning="WARNING:SPARK CLUSTER IN UNSTABLE STATE. TRY REDUCE INPUT SPEED"
 
         val avgLatencyAdjust = avgLatency + batchSize.toDouble
         val recordThroughput = totalRecords / totalTime
