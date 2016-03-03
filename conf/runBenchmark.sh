@@ -12,31 +12,31 @@ fi
 
 
 #cluster
-#sparkMaster="spark://spark-25.softlayer.com:7077"
-#confFile="/opt/install/streamingBenchmark/conf/benchmarkConf.yaml"
-#sparkSubmit="/opt/install/spark-1.6.0-bin-hadoop2.6/bin/spark-submit"
-#sparkBenchmarkJar="/opt/install/streamingBenchmark/spark-benchmarks/target/spark-benchmarks-0.1.0.jar"
-#kafkaHostFile="/opt/install/streamingBenchmark/conf/kafka-host.txt"
-#sparkHostFile="/opt/install/streamingBenchmark/conf/spark-host.txt"
-#pushToKafkaJar="/opt/install/streamingBenchmark/push-to-kafka/target/push-to-kafka-0.1.0.jar"
-#zookeeperStartScript="/opt/install/zookeeper-3.4.6/bin/zkServer.sh"
-#kafkaStartScript="/opt/install/kafka_2.10-0.8.2.2/bin/kafka-server-start.sh"
-#kafkaProperties="/opt/install/kafka_2.10-0.8.2.2/config/server.properties"
-#kafkaStartLog=" /tmp/kafka/kafka-start.log"
+sparkMaster="spark://spark-25.softlayer.com:7077"
+confFile="/opt/install/streamingBenchmark/conf/benchmarkConf.yaml"
+sparkSubmit="/opt/install/spark-1.6.0-bin-hadoop2.6/bin/spark-submit"
+sparkBenchmarkJar="/opt/install/streamingBenchmark/spark-benchmarks/target/spark-benchmarks-0.1.0.jar"
+kafkaHostFile="/opt/install/streamingBenchmark/conf/kafka-host.txt"
+sparkHostFile="/opt/install/streamingBenchmark/conf/spark-host.txt"
+pushToKafkaJar="/opt/install/streamingBenchmark/push-to-kafka/target/push-to-kafka-0.1.0.jar"
+zookeeperStartScript="/opt/install/zookeeper-3.4.6/bin/zkServer.sh"
+kafkaStartScript="/opt/install/kafka_2.10-0.8.2.2/bin/kafka-server-start.sh"
+kafkaProperties="/opt/install/kafka_2.10-0.8.2.2/config/server.properties"
+kafkaStartLog=" /tmp/kafka/kafka-start.log"
 
 
 #local
-sparkMaster=" spark://sachins-MacBook-Pro.local:7077"
-confFile="/Users/sachin/Documents/github/streamingBenchmark/conf/benchmarkConfLocal.yaml"
-sparkSubmit="/Users/sachin/spark_local/spark-1.5.0-bin-hadoop2.6/bin/spark-submit"
-sparkBenchmarkJar="/Users/sachin/Documents/github/streamingBenchmark/spark-benchmarks/target/spark-benchmarks-0.1.0.jar"
-kafkaHostFile="/Users/sachin/Documents/github/streamingBenchmark/conf/kafka-host.txt"
-sparkHostFile="/Users/sachin/Documents/github/streamingBenchmark/conf/spark-host.txt"
-pushToKafkaJar="/Users/sachin/Documents/github/streamingBenchmark/push-to-kafka/target/push-to-kafka-0.1.0.jar"
-zookeeperStartScript=""
-kafkaStartScript=""
-kafkaProperties=""
-kafkaStartLog=""
+#sparkMaster=" spark://sachins-MacBook-Pro.local:7077"
+#confFile="/Users/sachin/Documents/github/streamingBenchmark/conf/benchmarkConfLocal.yaml"
+#sparkSubmit="/Users/sachin/spark_local/spark-1.5.0-bin-hadoop2.6/bin/spark-submit"
+#sparkBenchmarkJar="/Users/sachin/Documents/github/streamingBenchmark/spark-benchmarks/target/spark-benchmarks-0.1.0.jar"
+#kafkaHostFile="/Users/sachin/Documents/github/streamingBenchmark/conf/kafka-host.txt"
+#sparkHostFile="/Users/sachin/Documents/github/streamingBenchmark/conf/spark-host.txt"
+#pushToKafkaJar="/Users/sachin/Documents/github/streamingBenchmark/push-to-kafka/target/push-to-kafka-0.1.0.jar"
+#zookeeperStartScript=""
+#kafkaStartScript=""
+#kafkaProperties=""
+#kafkaStartLog=""
 
 
 runSparkSubmit(){
@@ -84,12 +84,12 @@ if [[ ${bachTimeLine} == *${performanceBatchTime}* ]]
 fi
 
 echo "**********launch spark submit**********"
-echo "/usr/bin/nohup ${sparkSubmit} --class spark.benchmark.TwitterStreaming --master ${sparkMaster} ${sparkBenchmarkJar} ${confFile} 2>&1 &"
-`/usr/bin/nohup ${sparkSubmit} --class spark.benchmark.TwitterStreaming --master ${sparkMaster} ${sparkBenchmarkJar} ${confFile} \> sparkSubmit_${processId}.log 2\>&1 &`
+echo "nohup ${sparkSubmit} --class spark.benchmark.TwitterStreaming --master ${sparkMaster} ${sparkBenchmarkJar} ${confFile} 2>&1 &"
+`nohup ${sparkSubmit} --class spark.benchmark.TwitterStreaming --master ${sparkMaster} ${sparkBenchmarkJar} ${confFile} > sparkSubmit_${processId}.log 2>&1 &`
 
 echo "**********validating spark submit**********"
 echo "cat sparkSubmit_${processId}.log |tail -100|grep Exception"
-tailString=`cat sparkSubmit_${processId}.log |tail -100`
+tailString=`cat ~/sparkSubmit_${processId}.log |tail -100`
 if [[ ${tailString} == *"Exception"* ]]; then
   echo "failed!!"
 	exit -1
@@ -152,7 +152,7 @@ fi
 
 
 echo "**********push conf file to all host**********"
-pssh -h ${kafkaHostFile} -i "scp 10.168.102.160:${confFile} ${confFile}"
+pssh -h ${kafkaHostFile} -i "scp 169.45.101.75:${confFile} ${confFile}"
 if [ "$?" = "0" ]; then
 	echo "Success!!"
 else
@@ -162,7 +162,8 @@ fi
 
 
 echo "**********launch push to kafka operation**********"
-`pssh -h ${kafkaHostFile} -i "nohup java -cp ${pushToKafkaJar}  benchmark.common.kafkaPush.PushToKafka ${confFile} > pushToKafka_${processId}.log 2>&1 &"`
+echo "pssh -h ${kafkaHostFile} -i nohup java -cp ${pushToKafkaJar}  benchmark.common.kafkaPush.PushToKafka ${confFile} > pushToKafka_${processId}.log 2>&1 &"
+pssh -h ${kafkaHostFile} -i "nohup java -cp ${pushToKafkaJar}  benchmark.common.kafkaPush.PushToKafka ${confFile} > pushToKafka_${processId}.log 2>&1 &"
 if [ "$?" = "0" ]; then
 	echo "Success!!"
 else
@@ -172,7 +173,7 @@ fi
 
 
 echo "**********validating push to kafka operation**********"
-tailString=`pssh -h ${kafkaHostFile} -i "cat pushToKafka_${processId}.log |tail -100"`
+tailString=`pssh -h ${kafkaHostFile} -i "cat ~/pushToKafka_${processId}.log |tail -100"`
 if [[ ${tailString} == *"Exception"* ]]; then
   echo "failed!!"
 	exit -1
@@ -212,20 +213,18 @@ if [ "$?" = "0" ]; then
 	echo "Success!!"
 else
 	echo "failed!!"
-	exit -1
 fi
 echo "**********delete data and kill kafka step2**********"
-pssh -h ${kafkaHostFile} -i "rm -r  /tmp/kafka-logs-*/"
+pssh -h ${kafkaHostFile} -i "rm -r  /tmp/kafka-logs"
 if [ "$?" = "0" ]; then
 	echo "Success!!"
 else
 	echo "failed!!"
-	exit -1
 fi
 
 
 echo "**********validate kafka is killed**********"
-countOfProcess=`pssh -h ${kafkaHostFile} -i "ps aux | grep zoo.cfg|grep -v grep" |grep -v SUCCESS |grep -v grep|grep -v Stderr |wc -l`
+countOfProcess=`pssh -h ${kafkaHostFile} -i "ps aux | grep kafka|grep server.properties|grep -v grep|wc -l" |grep -v SUCCESS |grep -v grep|grep -v Stderr |wc -l`
 if [ "$?" = "0" ]; then
 	echo "Success!!"
 else
@@ -233,7 +232,7 @@ else
 	exit -1
 fi
 
-if [ ${countOfProcess} > 0 ]; then
+if [ "${countOfProcess}" == "0 0 0" ]; then
 	echo "validation failed!!"
 	exit -1
 else
@@ -253,7 +252,7 @@ else
 fi
 
 echo "**********validate process is running**********"
-countOfProcess=`pssh -h ${kafkaHostFile} -i "ps aux | grep zoo.cfg|grep -v grep" |grep -v SUCCESS |grep -v grep|grep -v Stderr |wc -l`
+zookeeperCountOfProcess=`pssh -h ${kafkaHostFile} -i "ps aux | grep zoo.cfg|grep -v grep" |grep -v SUCCESS |grep -v grep|grep -v Stderr |wc -l`
 if [ "$?" = "0" ]; then
 	echo "Success!!"
 else
@@ -261,7 +260,7 @@ else
 	exit -1
 fi
 
-if [ "${countOfProcess}" = "3" ]; then
+if [ "${zookeeperCountOfProcess}" = "3" ]; then
 	echo "validation passed!!"
 else
 	echo "validation failed!!"
@@ -273,7 +272,7 @@ fi
 
 startKafka(){
 echo "**********starting kafka**********"
-pssh -h host.txt -i " nohup ${kafkaStartScript} ${kafkaProperties} > ${kafkaStartLog} 2>&1 & "
+pssh -h ${kafkaHostFile} -i " nohup ${kafkaStartScript} ${kafkaProperties} > ${kafkaStartLog} 2>&1 & "
 if [ "$?" = "0" ]; then
 	echo "Success!!"
 else
@@ -283,7 +282,7 @@ fi
 
 
 echo "**********validate process is running**********"
-countOfProcess=`pssh -h ${kafkaHostFile} -i "ps aux | grep kafka|grep server.properties|grep -v grep" |grep -v SUCCESS |grep -v grep|grep -v Stderr |wc -l`
+kafkaCountOfProcess=`pssh -h ${kafkaHostFile} -i "ps aux | grep kafka|grep server.properties|grep -v grep" |grep -v SUCCESS |grep -v grep|grep -v Stderr |wc -l`
 if [ "$?" = "0" ]; then
 	echo "Success!!"
 else
@@ -291,7 +290,7 @@ else
 	exit -1
 fi
 
-if [ "${countOfProcess}" = "3" ]; then
+if [ "${kafkaCountOfProcess}" = "3" ]; then
 	echo "validation passed!!"
 else
 	echo "validation failed!!"
@@ -299,6 +298,30 @@ else
 fi
 
 }
+
+for var in "$@"
+do
+   case $var in
+        "--killSparkBenchmarkJob" )
+          killSparkBenchmarkJob;;
+        "--runSparkSubmit" )
+          runSparkSubmit 1 2000 30 3333334;;
+        "--runPushToKafka" )
+          runPushToKafka 1 2000 30 3333334;;
+        "--startKafka" )
+          startKafka;;
+        "--startZookeper" )
+          startZookeper;;
+        "--cleanKafka" )
+          cleanKafka;;
+        "--restartKafkaCluster" )
+          cleanKafka;startZookeper;startKafka;;
+          *)
+            echo $"Usage: $0 {--restartKafkaCluster (cleanKafka,startZookeper,startKafka)|--killSparkBenchmarkJob|--runSparkSubmit|--runPushToKafka|--startKafka|--startZookeper|--cleanKafka}"
+            exit 1
+    esac
+done
+
 #killSparkBenchmarkJob
 #runSparkSubmit 1 2000 30 3333334
 #runPushToKafka 1 2000 30 3333334
