@@ -21,7 +21,7 @@ storm.ackers: 2
 
 #Spark Specific
 spark.twitterPull.batchTime: 200000
-spark.performance.batchTime: #performanceBatchTime#
+spark.performance.batchTime: 2000
 spark.performance.windowSize: 60000
 spark.performance.checkPointPath: "/tmp/checkpointPath/"
 
@@ -30,12 +30,12 @@ kafka.serializer: "kafka.serializer.StringEncoder"
 kafka.requiredAcks: "1"
 kafka.partitions: 9
 kafka.topic: "ad-events2"
-kafka.brokers:
-    - "10.168.102.160"
-    - "10.168.102.135"
-    - "10.168.102.155"
 #kafka.brokers:
-#    - "localhost"
+#    - "10.168.102.160"
+#    - "10.168.102.135"
+#    - "10.168.102.155"
+kafka.brokers:
+    - "localhost"
 kafka.port: 9092
 
 twitter.consumerKey: "taVpGWVGyRiFnQDsNwPwITRcH"
@@ -48,8 +48,8 @@ data.twitter.outputDirectory: "/tmp/output/tweets/3/"
 data.twitter.write.numFilesPerPartition: 1
 data.twitter.tweet.threshold: 0
 data.twitter.receiver.parallalism: 2
-data.kafka.Loader.thread: #kafkaLoaderThread#
-data.kafka.Loader.thread.recordLimit: #kafkaLoaderThreadLimit#
+data.kafka.Loader.thread: 10
+data.kafka.Loader.thread.recordLimit: 3333334
 data.kafka.inputFile: "/tmp/data/tweet_dataset"
 
 #100,000,000

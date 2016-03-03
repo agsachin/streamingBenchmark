@@ -73,15 +73,15 @@ class LatencyListener(ssc: StreamingContext, commonConfig: Map[String, Any]) ext
     if (!thread.isAlive) {
       totalRecords += recordThisBatch
       val imap = getMap
-      imap(batchInfo.batchTime.toString()) = "batchTime" + batchInfo.batchTime +
-        ", batch Count so far" + batchCount +
-        ", total Records so far" + totalRecords +
-        ", record This Batch" + recordThisBatch +
-        ", submission Time" + batchInfo.submissionTime +
-        ", processing Start Time" + batchInfo.processingStartTime +
-        ", processing End Time" + batchInfo.processingEndTime +
-        ", scheduling Delay" + batchInfo.schedulingDelay +
-        ", processing Delay" + batchInfo.processingDelay
+      imap(batchInfo.batchTime.toString()) = "batchTime: " + batchInfo.batchTime +
+        ", batch Count so far: " + batchCount +
+        ", total Records so far: " + totalRecords +
+        ", record This Batch: " + recordThisBatch +
+        ", submission Time: " + batchInfo.submissionTime +
+        ", processing Start Time: " + batchInfo.processingStartTime +
+        ", processing End Time: " + batchInfo.processingEndTime +
+        ", scheduling Delay: " + batchInfo.schedulingDelay +
+        ", processing Delay: " + batchInfo.processingDelay
 
       setMap(imap)
    }
@@ -94,7 +94,7 @@ class LatencyListener(ssc: StreamingContext, commonConfig: Map[String, Any]) ext
         //This is weighted avg of every batch process time. The weight is records processed int the batch
         val avgLatency = totalDelay.toDouble / totalRecords
         if (avgLatency > batchSize.toDouble)
-          println("WARNING:SPARK CLUSTER IN UNSTABLE STATE. TRY REDUCE INPUT SPEED")
+          val warning="WARNING:SPARK CLUSTER IN UNSTABLE STATE. TRY REDUCE INPUT SPEED"
 
         val avgLatencyAdjust = avgLatency + batchSize.toDouble
         val recordThroughput = totalRecords / totalTime
@@ -106,7 +106,8 @@ class LatencyListener(ssc: StreamingContext, commonConfig: Map[String, Any]) ext
         ", Total processing delay = " + totalDelay + " ms "+
         ", Total Consumed time = " + totalTime + " s " +
         ", Avg latency/batchInterval = " + avgLatencyAdjust + " ms "+
-        ", Avg records/sec = " + recordThroughput + " records/s "
+        ", Avg records/sec = " + recordThroughput + " records/s " +
+        ", WARNING = "+ warning
 
         imap.foreach {case (key, value) => println(key + "-->" + value)}
 
