@@ -250,6 +250,8 @@ else
 	exit -1
 fi
 
+sleep 10s
+
 echo "**********validate process is running**********"
 zookeeperCountOfProcess=`pssh -h ${kafkaHostFile} -i "ps aux | grep zoo.cfg|grep -v grep" |grep -v SUCCESS |grep -v grep|grep -v Stderr |wc -l`
 if [ "$?" = "0" ]; then
@@ -279,6 +281,7 @@ else
 	exit -1
 fi
 
+sleep 10s
 
 echo "**********validate process is running**********"
 kafkaCountOfProcess=`pssh -h ${kafkaHostFile} -i "ps aux | grep kafka|grep server.properties|grep -v grep" |grep -v SUCCESS |grep -v grep|grep -v Stderr |wc -l`
