@@ -44,11 +44,15 @@ processId=$1
 performanceBatchTime=$2
 kafkaLoaderThread=$3
 kafkaLoaderThreadLimit=$4
+windowSize=$5
 
 echo ${processId}
 echo ${performanceBatchTime}
 echo ${kafkaLoaderThread}
 echo ${kafkaLoaderThreadLimit}
+echo ${windowSize}
+
+
 
 
 echo "" ;echo "" ;echo "**********copy backup file to conf file**********"
@@ -62,8 +66,10 @@ fi
 
 
 echo "" ;echo "" ;echo "**********creating conf file**********"
-echo "sed -i -e 's/#performanceBatchTime#/'${performanceBatchTime}'/g;s/#kafkaLoaderThread#/'${kafkaLoaderThread}'/g;s/#kafkaLoaderThreadLimit#/'${kafkaLoaderThreadLimit}'/g' ${confFile}"
-`sed -i -e 's/#performanceBatchTime#/'${performanceBatchTime}'/g;s/#kafkaLoaderThread#/'${kafkaLoaderThread}'/g;s/#kafkaLoaderThreadLimit#/'${kafkaLoaderThreadLimit}'/g' ${confFile}`
+echo "sed -i -e 's/#performanceBatchTime#/'${performanceBatchTime}'/g;s/#windowSize#/'${windowSize}'/g;s/#kafkaLoaderThread#/'${kafkaLoaderThread}'/g;s/#kafkaLoaderThreadLimit#/'${kafkaLoaderThreadLimit}'/g' ${confFile}"
+`sed -i -e 's/#performanceBatchTime#/'${performanceBatchTime}'/g;s/#windowSize#/'${windowSize}'/g;s/#kafkaLoaderThread#/'${kafkaLoaderThread}'/g;s/#kafkaLoaderThreadLimit#/'${kafkaLoaderThreadLimit}'/g' ${confFile}`
+   #windowSize#
+
 if [ "$?" = "0" ]; then
 	echo "Success!!"
 else
@@ -116,6 +122,7 @@ processId=$1
 performanceBatchTime=$2
 kafkaLoaderThread=$3
 kafkaLoaderThreadLimit=$4
+windowSize=$5
 
 if (( $kafkaLoaderThread % 3 == 0 ))  ; then
 	kafkaLoaderThread=$((kafkaLoaderThread/3))
@@ -129,6 +136,7 @@ echo ${processId}
 echo ${performanceBatchTime}
 echo ${kafkaLoaderThread}
 echo ${kafkaLoaderThreadLimit}
+echo ${windowSize}
 
 echo "" ;echo "" ;echo "**********copy backup file to conf file**********"
 pssh -h ${kafkaHostFile} -i " cp ${confFile}.bkp ${confFile}"
@@ -140,8 +148,8 @@ else
 fi
 
 echo "" ;echo "" ;echo "**********creating conf file**********"
-echo "pssh -h ${kafkaHostFile} -i sed -i -e 's/#performanceBatchTime#/'${performanceBatchTime}'/g;s/#kafkaLoaderThread#/'${kafkaLoaderThread}'/g;s/#kafkaLoaderThreadLimit#/'${kafkaLoaderThreadLimit}'/g' ${confFile}"
-pssh -h ${kafkaHostFile} -i "sed -i -e 's/#performanceBatchTime#/'${performanceBatchTime}'/g;s/#kafkaLoaderThread#/'${kafkaLoaderThread}'/g;s/#kafkaLoaderThreadLimit#/'${kafkaLoaderThreadLimit}'/g' ${confFile}"
+echo "pssh -h ${kafkaHostFile} -i sed -i -e 's/#performanceBatchTime#/'${performanceBatchTime}'/g;s/#windowSize#/'${windowSize}'/g;s/#kafkaLoaderThread#/'${kafkaLoaderThread}'/g;s/#kafkaLoaderThreadLimit#/'${kafkaLoaderThreadLimit}'/g' ${confFile}"
+pssh -h ${kafkaHostFile} -i "sed -i -e 's/#performanceBatchTime#/'${performanceBatchTime}'/g;s/#windowSize#/'${windowSize}'/g;s/#kafkaLoaderThread#/'${kafkaLoaderThread}'/g;s/#kafkaLoaderThreadLimit#/'${kafkaLoaderThreadLimit}'/g' ${confFile}"
 if [ "$?" = "0" ]; then
 	echo "Success!!"
 else
@@ -327,15 +335,15 @@ fi
           killSparkBenchmarkJob;;
         "--runSparkSubmit" )
         if [ $# -eq 5 ]; then
-             runSparkSubmit $2 $3 $4 $5
+             runSparkSubmit $2 $3 $4 $5 $6
         else
-            echo "invalid argument please pass processId,performanceBatchTime,kafkaLoaderThread,kafkaLoaderThreadLimit"
+            echo "invalid argument please pass processId,performanceBatchTime,kafkaLoaderThread,kafkaLoaderThreadLimit,windowSize"
         fi;;
         "--runPushToKafka" )
         if [ $# -eq 5 ]; then
-             runPushToKafka $2 $3 $4 $5
+             runPushToKafka $2 $3 $4 $5 $6
         else
-            echo "invalid argument please pass processId,performanceBatchTime,kafkaLoaderThread,kafkaLoaderThreadLimit"
+            echo "invalid argument please pass processId,performanceBatchTime,kafkaLoaderThread,kafkaLoaderThreadLimit,windowSize"
         fi;;
         "--startKafka" )
           startKafka;;
@@ -349,8 +357,8 @@ fi
             echo $"Usage: $0 {
             --restartKafkaCluster (all steps: cleanKafka,startZookeper,startKafka)
             --killSparkBenchmarkJob
-            --runSparkSubmit processId performanceBatchTime kafkaLoaderThread kafkaLoaderThreadLimit
-            --runPushToKafka processId performanceBatchTime kafkaLoaderThread kafkaLoaderThreadLimit
+            --runSparkSubmit processId performanceBatchTime kafkaLoaderThread kafkaLoaderThreadLimit windowSize
+            --runPushToKafka processId performanceBatchTime kafkaLoaderThread kafkaLoaderThreadLimit windowSize
             --startKafka
             --startZookeper
             --cleanKafka
