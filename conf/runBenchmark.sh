@@ -83,8 +83,8 @@ if [[ ${bachTimeLine} == *${performanceBatchTime}* ]]
 fi
 
 echo "**********mv old log files**********"
-echo "pssh -h ${kafkaHostFile} -i mv ~/sparkSubmit_${processId}.log /tmp/"
-pssh -h ${kafkaHostFile} -i "mv ~/sparkSubmit_${processId}.log /tmp/"
+echo " mv ~/sparkSubmit_${processId}.log /tmp/"
+mv ~/sparkSubmit_${processId}.log /tmp/
 if [ "$?" = "0" ]; then
 	echo "Success!!"
 else
