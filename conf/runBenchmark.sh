@@ -334,13 +334,13 @@ fi
         "--killSparkBenchmarkJob" )
           killSparkBenchmarkJob;;
         "--runSparkSubmit" )
-        if [ $# -eq 5 ]; then
+        if [ $# -eq 6 ]; then
              runSparkSubmit $2 $3 $4 $5 $6
         else
             echo "invalid argument please pass processId,performanceBatchTime,kafkaLoaderThread,kafkaLoaderThreadLimit,windowSize"
         fi;;
         "--runPushToKafka" )
-        if [ $# -eq 5 ]; then
+        if [ $# -eq 6 ]; then
              runPushToKafka $2 $3 $4 $5 $6
         else
             echo "invalid argument please pass processId,performanceBatchTime,kafkaLoaderThread,kafkaLoaderThreadLimit,windowSize"
