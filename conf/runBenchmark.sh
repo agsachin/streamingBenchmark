@@ -330,6 +330,7 @@ fi
             --startKafka
             --startZookeper
             --cleanKafka
+            TODO add clean spark and add kill push to kafka
             }"
             exit 1
     esac
