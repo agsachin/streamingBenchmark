@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "**********move to home directory**********"
+echo "" ;echo "" ;echo "**********move to home directory**********"
 cd ;
 if [ "$?" = "0" ]; then
 	echo "Sucess!!"
@@ -39,7 +39,7 @@ kafkaStartLog=" /tmp/kafka/kafka-start.log"
 
 
 runSparkSubmit(){
-echo "**********print Params received**********"
+echo "" echo "" ;echo "" ;echo "**********print Params received**********"
 processId=$1
 performanceBatchTime=$2
 kafkaLoaderThread=$3
@@ -51,7 +51,7 @@ echo ${kafkaLoaderThread}
 echo ${kafkaLoaderThreadLimit}
 
 
-echo "**********copy backup file to conf file**********"
+echo "" ;echo "" ;echo "**********copy backup file to conf file**********"
 cp ${confFile}.bkp ${confFile}
 if [ "$?" = "0" ]; then
 	echo "Success!!"
@@ -61,7 +61,7 @@ else
 fi
 
 
-echo "**********creating conf file**********"
+echo "" ;echo "" ;echo "**********creating conf file**********"
 echo "sed -i -e 's/#performanceBatchTime#/'${performanceBatchTime}'/g;s/#kafkaLoaderThread#/'${kafkaLoaderThread}'/g;s/#kafkaLoaderThreadLimit#/'${kafkaLoaderThreadLimit}'/g' ${confFile}"
 `sed -i -e 's/#performanceBatchTime#/'${performanceBatchTime}'/g;s/#kafkaLoaderThread#/'${kafkaLoaderThread}'/g;s/#kafkaLoaderThreadLimit#/'${kafkaLoaderThreadLimit}'/g' ${confFile}`
 if [ "$?" = "0" ]; then
@@ -71,7 +71,7 @@ else
 	exit -1
 fi
 
-echo "**********validating conf file**********"
+echo "" ;echo "" ;echo "**********validating conf file**********"
 echo "cat ${confFile} |grep spark.performance.batchTime"
 bachTimeLine=$(cat ${confFile} |grep 'spark.performance.batchTime' )
 if [[ ${bachTimeLine} == *${performanceBatchTime}* ]]
@@ -82,21 +82,22 @@ if [[ ${bachTimeLine} == *${performanceBatchTime}* ]]
     exit -1
 fi
 
-echo "**********mv old log files**********"
+echo "" ;echo "" ;echo "**********mv old log files**********"
 echo " mv ~/sparkSubmit_${processId}.log /tmp/"
 mv ~/sparkSubmit_${processId}.log /tmp/
 if [ "$?" = "0" ]; then
 	echo "Success!!"
 else
 	echo "failed!!"
-	exit -1
 fi
 
-echo "**********launch spark submit**********"
+echo "" ;echo "" ;echo "**********launch spark submit**********"
 echo "nohup ${sparkSubmit} --class spark.benchmark.TwitterStreaming --master ${sparkMaster} ${sparkBenchmarkJar} ${confFile} > ~/sparkSubmit_${processId}.log 2>&1 &"
 `nohup ${sparkSubmit} --class spark.benchmark.TwitterStreaming --master ${sparkMaster} ${sparkBenchmarkJar} ${confFile} > sparkSubmit_${processId}.log 2>&1 &`
 
-echo "**********validating spark submit**********"
+sleep 10s
+
+echo "" ;echo "" ;echo "**********validating spark submit**********"
 echo "cat sparkSubmit_${processId}.log |tail -100|grep Exception"
 tailString=`cat ~/sparkSubmit_${processId}.log |tail -100`
 if [[ ${tailString} == *"Exception"* ]]; then
@@ -110,7 +111,7 @@ fi
 
 
 runPushToKafka(){
-echo "**********print Params received**********"
+echo "" ;echo "" ;echo "**********print Params received**********"
 processId=$1
 performanceBatchTime=$2
 kafkaLoaderThread=$3
@@ -129,7 +130,7 @@ echo ${performanceBatchTime}
 echo ${kafkaLoaderThread}
 echo ${kafkaLoaderThreadLimit}
 
-echo "**********copy backup file to conf file**********"
+echo "" ;echo "" ;echo "**********copy backup file to conf file**********"
 pssh -h ${kafkaHostFile} -i " cp ${confFile}.bkp ${confFile}"
 if [ "$?" = "0" ]; then
 	echo "Success!!"
@@ -138,7 +139,7 @@ else
 	exit -1
 fi
 
-echo "**********creating conf file**********"
+echo "" ;echo "" ;echo "**********creating conf file**********"
 echo "pssh -h ${kafkaHostFile} -i sed -i -e 's/#performanceBatchTime#/'${performanceBatchTime}'/g;s/#kafkaLoaderThread#/'${kafkaLoaderThread}'/g;s/#kafkaLoaderThreadLimit#/'${kafkaLoaderThreadLimit}'/g' ${confFile}"
 pssh -h ${kafkaHostFile} -i "sed -i -e 's/#performanceBatchTime#/'${performanceBatchTime}'/g;s/#kafkaLoaderThread#/'${kafkaLoaderThread}'/g;s/#kafkaLoaderThreadLimit#/'${kafkaLoaderThreadLimit}'/g' ${confFile}"
 if [ "$?" = "0" ]; then
@@ -148,7 +149,7 @@ else
 	exit -1
 fi
 
-echo "**********validating conf file**********"
+echo "" ;echo "" ;echo "**********validating conf file**********"
 echo "pssh -h ${kafkaHostFile} -i cat ${confFile} |grep spark.performance.batchTime"
 bachTimeLine=$( pssh -h /opt/install/streamingBenchmark/conf/kafka-host.txt  -i "cat ${confFile} |grep 'spark.performance.batchTime' " |grep -v SUCCESS |grep ${performanceBatchTime} |wc -l )
 if [[ "${bachTimeLine}" == "3" ]]
@@ -160,7 +161,7 @@ if [[ "${bachTimeLine}" == "3" ]]
 fi
 
 #
-#echo "**********push conf file to all host**********"
+#echo "" ;echo "" ;echo "**********push conf file to all host**********"
 #pssh -h ${kafkaHostFile} -i "scp 169.45.101.75:${confFile} ${confFile}"
 #if [ "$?" = "0" ]; then
 #	echo "Success!!"
@@ -169,18 +170,17 @@ fi
 #	exit -1
 #fi
 
-echo "**********mv old log files**********"
+echo "" ;echo "" ;echo "**********mv old log files**********"
 echo "pssh -h ${kafkaHostFile} -i mv ~/pushToKafka_${processId}.log /tmp/"
 pssh -h ${kafkaHostFile} -i "mv ~/pushToKafka_${processId}.log /tmp/"
 if [ "$?" = "0" ]; then
 	echo "Success!!"
 else
 	echo "failed!!"
-	exit -1
 fi
 
 
-echo "**********launch push to kafka operation**********"
+echo "" ;echo "" ;echo "**********launch push to kafka operation**********"
 echo "pssh -h ${kafkaHostFile} -i nohup java -cp ${pushToKafkaJar}  benchmark.common.kafkaPush.PushToKafka ${confFile} > pushToKafka_${processId}.log 2>&1 &"
 pssh -h ${kafkaHostFile} -i "nohup java -cp ${pushToKafkaJar}  benchmark.common.kafkaPush.PushToKafka ${confFile} > ~/pushToKafka_${processId}.log 2>&1 &"
 if [ "$?" = "0" ]; then
@@ -192,7 +192,7 @@ fi
 
 sleep 10s
 
-echo "**********validating push to kafka operation**********"
+echo "" ;echo "" ;echo "**********validating push to kafka operation**********"
 tailString=`pssh -h ${kafkaHostFile} -i "cat ~/pushToKafka_${processId}.log |tail -100"`
 if [[ ${tailString} == *"Exception"* ]]; then
   echo "failed!!"
@@ -204,7 +204,7 @@ fi
 }
 
 killSparkBenchmarkJob() {
-echo "**********kill spark benchmark job**********"
+echo "" ;echo "" ;echo "**********kill spark benchmark job**********"
 ps aux | grep TwitterStreaming  |grep -v grep | head -1 | cut -d ' ' -f 2 | xargs kill -9
 if [ "$?" = "0" ]; then
 	echo "Success1!!"
@@ -227,14 +227,14 @@ fi
 
 
 cleanKafka(){
-echo "**********delete data and kill kafka step1**********"
+echo "" ;echo "" ;echo "**********delete data and kill kafka step1**********"
 pssh -h ${kafkaHostFile} -i "rm -r  /opt/install/kafka_2.10-0.8.2.2/logs/*"
 if [ "$?" = "0" ]; then
 	echo "Success!!"
 else
 	echo "failed!!"
 fi
-echo "**********delete data and kill kafka step2**********"
+echo "" ;echo "" ;echo "**********delete data and kill kafka step2**********"
 pssh -h ${kafkaHostFile} -i "rm -r  /tmp/kafka-logs"
 if [ "$?" = "0" ]; then
 	echo "Success!!"
@@ -243,7 +243,7 @@ else
 fi
 
 
-echo "**********validate kafka is killed**********"
+echo "" ;echo "" ;echo "**********validate kafka is killed**********"
 countOfProcess=`pssh -h ${kafkaHostFile} -i "ps aux | grep kafka|grep server.properties|grep -v grep|wc -l" |grep -v SUCCESS |grep -v grep|grep -v Stderr |wc -l`
 if [ "$?" = "0" ]; then
 	echo "Success!!"
@@ -262,7 +262,7 @@ fi
 }
 
 startZookeper(){
-echo "**********starting zookeeper**********"
+echo "" ;echo "" ;echo "**********starting zookeeper**********"
 pssh -h ${kafkaHostFile} -i "${zookeeperStartScript} start"
 if [ "$?" = "0" ]; then
 	echo "Success!!"
@@ -273,7 +273,7 @@ fi
 
 sleep 10s
 
-echo "**********validate process is running**********"
+echo "" ;echo "" ;echo "**********validate process is running**********"
 zookeeperCountOfProcess=`pssh -h ${kafkaHostFile} -i "ps aux | grep zoo.cfg|grep -v grep" |grep -v SUCCESS |grep -v grep|grep -v Stderr |wc -l`
 if [ "$?" = "0" ]; then
 	echo "Success!!"
@@ -293,7 +293,7 @@ fi
 
 
 startKafka(){
-echo "**********starting kafka**********"
+echo "" ;echo "" ;echo "**********starting kafka**********"
 pssh -h ${kafkaHostFile} -i " nohup ${kafkaStartScript} ${kafkaProperties} > ${kafkaStartLog} 2>&1 & "
 if [ "$?" = "0" ]; then
 	echo "Success!!"
@@ -304,7 +304,7 @@ fi
 
 sleep 10s
 
-echo "**********validate process is running**********"
+echo "" ;echo "" ;echo "**********validate process is running**********"
 kafkaCountOfProcess=`pssh -h ${kafkaHostFile} -i "ps aux | grep kafka|grep server.properties|grep -v grep" |grep -v SUCCESS |grep -v grep|grep -v Stderr |wc -l`
 if [ "$?" = "0" ]; then
 	echo "Success!!"
