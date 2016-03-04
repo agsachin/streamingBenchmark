@@ -83,7 +83,7 @@ if [[ ${bachTimeLine} == *${performanceBatchTime}* ]]
 fi
 
 echo "**********launch spark submit**********"
-echo "nohup ${sparkSubmit} --class spark.benchmark.TwitterStreaming --master ${sparkMaster} ${sparkBenchmarkJar} ${confFile} 2>&1 &"
+echo "nohup ${sparkSubmit} --class spark.benchmark.TwitterStreaming --master ${sparkMaster} ${sparkBenchmarkJar} ${confFile} > sparkSubmit_${processId}.log 2>&1 &"
 `nohup ${sparkSubmit} --class spark.benchmark.TwitterStreaming --master ${sparkMaster} ${sparkBenchmarkJar} ${confFile} > sparkSubmit_${processId}.log 2>&1 &`
 
 echo "**********validating spark submit**********"

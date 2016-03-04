@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 flag=true
-count=11
+count=1
 #cluster
 runBenchmarkScript="/opt/install/streamingBenchmark/conf/runBenchmark.sh"
 
@@ -90,51 +90,61 @@ else
   case $count in
         "1" )
           sh ${runBenchmarkScript} --restartKafkaCluster
+          sleep 30s
           sh ${runBenchmarkScript} --runSparkSubmit $count 1000 30 3333334
           sleep 30s
           sh ${runBenchmarkScript} --runPushToKafka $count 1000 30 3333334;;
         "2" )
           sh ${runBenchmarkScript} --restartKafkaCluster
+          sleep 30s
           sh ${runBenchmarkScript} --runSparkSubmit $count 900 30 3333334
           sleep 30s
           sh ${runBenchmarkScript} --runPushToKafka $count 900 30 3333334 ;;
         "3" )
           sh ${runBenchmarkScript} --restartKafkaCluster
+          sleep 30s
           sh ${runBenchmarkScript} --runSparkSubmit $count 800 30 3333334
           sleep 30s
           sh ${runBenchmarkScript} --runPushToKafka $count 800 30 3333334;;
         "4" )
           sh ${runBenchmarkScript} --restartKafkaCluster
+          sleep 30s
           sh ${runBenchmarkScript} --runSparkSubmit $count 700 30 3333334
           sleep 30s
           sh ${runBenchmarkScript} --runPushToKafka $count 700 30 3333334;;
         "5" )
           sh ${runBenchmarkScript} --restartKafkaCluster
+          sleep 30s
           sh ${runBenchmarkScript} --runSparkSubmit $count 600 30 3333334
           sleep 30s
           sh ${runBenchmarkScript} --runPushToKafka $count 600 30 3333334;;
         "6" )
           sh ${runBenchmarkScript} --restartKafkaCluster
+          sleep 30s
           sh ${runBenchmarkScript} --runSparkSubmit $count 500 30 3333334
           sleep 30s
           sh ${runBenchmarkScript} --runPushToKafka $count 500 30 3333334;;
         "7" )
           sh ${runBenchmarkScript} --restartKafkaCluster
+          sleep 30s
           sh ${runBenchmarkScript} --runSparkSubmit $count 400 30 3333334
           sleep 30s
           sh ${runBenchmarkScript} --runPushToKafka $count 400 30 3333334;;
         "8" )
           sh ${runBenchmarkScript} --restartKafkaCluster
+          sleep 30s
           sh ${runBenchmarkScript} --runSparkSubmit $count 300 30 3333334
           sleep 30s
           sh ${runBenchmarkScript} --runPushToKafka $count 300 30 3333334;;
         "9" )
           sh ${runBenchmarkScript} --restartKafkaCluster
+          sleep 30s
           sh ${runBenchmarkScript} --runSparkSubmit $count 200 30 3333334
           sleep 30s
           sh ${runBenchmarkScript} --runPushToKafka $count 200 30 3333334;;
         "10" )
           sh ${runBenchmarkScript} --restartKafkaCluster
+          sleep 30s
           sh ${runBenchmarkScript} --runSparkSubmit $count 100 30 3333334
           sleep 30s
           sh ${runBenchmarkScript} --runPushToKafka $count 100 30 3333334;;
