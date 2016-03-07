@@ -85,7 +85,7 @@ object PushToKafka {
           val r = scala.util.Random
           var count: Long = 0
           val bufferedSource = Source.fromFile(inputFile)
-          val line = bufferedSource.getLines
+          //val line = bufferedSource.getLines
           val jsonParser=new JsonParser();
 
           val printThread = new Thread() {
