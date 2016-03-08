@@ -86,7 +86,7 @@ object PushToKafka {
           var count: Long = 0
           val bufferedSource = Source.fromFile(inputFile)
           //val line = bufferedSource.getLines
-          val jsonParser=new JsonParser();
+         // val jsonParser=new JsonParser();
 
           val printThread = new Thread() {
             var prevCount:Long=0
@@ -110,7 +110,7 @@ object PushToKafka {
 //            }
           bufferedSource.getLines.foreach(line => {
             if (count <= recordLimitPerThread-1) {
-              val text = jsonParser.parse(line).getAsJsonObject().get("text")
+              val text = new JsonParser().parse(line).getAsJsonObject().get("text")
               val id = r.nextInt(kafkaPartitions)
               val data: KeyedMessage[String, String] = new KeyedMessage[String, String](topic, id.toString, text.toString)
              producer.send(data)
