@@ -28,8 +28,8 @@ spark.performance.checkPointPath: "/tmp/checkpointPath/"
 
 kafka.serializer: "kafka.serializer.StringEncoder"
 kafka.requiredAcks: "1"
-kafka.partitions: 9
-kafka.topic: "ad-events2"
+kafka.partitions: 27
+kafka.topic: "ad-events3"
 kafka.brokers:
     - "10.168.102.160"
     - "10.168.102.135"
