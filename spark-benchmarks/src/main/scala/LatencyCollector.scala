@@ -33,7 +33,9 @@ class LatencyListener(ssc: StreamingContext, commonConfig: Map[String, Any]) ext
 
   var metricMap: scala.collection.mutable.Map[String, Object] = _
   var startTime = 0L
+  var startTime1 = 0L
   var endTime = 0L
+  var endTime1 = 0L
   var totalDelay = 0L
   var hasStarted = false
   var batchCount = 0
@@ -73,15 +75,15 @@ class LatencyListener(ssc: StreamingContext, commonConfig: Map[String, Any]) ext
     if (!thread.isAlive) {
       totalRecords += recordThisBatch
       val imap = getMap
-      imap(batchInfo.batchTime.toString()) = "batchTime: " + batchInfo.batchTime +
-        ", batch Count so far: " + batchCount +
-        ", total Records so far: " + totalRecords +
-        ", record This Batch: " + recordThisBatch +
-        ", submission Time: " + batchInfo.submissionTime +
-        ", processing Start Time: " + batchInfo.processingStartTime +
-        ", processing End Time: " + batchInfo.processingEndTime +
-        ", scheduling Delay: " + batchInfo.schedulingDelay +
-        ", processing Delay: " + batchInfo.processingDelay
+      imap(batchInfo.batchTime.toString()) = "batchTime," + batchInfo.batchTime +
+        ", batch Count so far," + batchCount +
+        ", total Records so far," + totalRecords +
+        ", record This Batch," + recordThisBatch +
+        ", submission Time," + batchInfo.submissionTime +
+        ", processing Start Time," + batchInfo.processingStartTime.getOrElse(0L) +
+        ", processing End Time," + batchInfo.processingEndTime.getOrElse(0L) +
+        ", scheduling Delay," + batchInfo.schedulingDelay.getOrElse(0L) +
+        ", processing Delay," + batchInfo.processingDelay.getOrElse(0L)
 
       setMap(imap)
    }
@@ -90,6 +92,7 @@ class LatencyListener(ssc: StreamingContext, commonConfig: Map[String, Any]) ext
       if (hasStarted && !thread.isAlive) {
         //not receiving any data more, finish
         endTime = System.currentTimeMillis()
+        endTime1 = batchInfo.processingEndTime.getOrElse(0L)
         var warning=""
         val totalTime = (endTime - startTime).toDouble / 1000
         //This is weighted avg of every batch process time. The weight is records processed int the batch
@@ -103,6 +106,10 @@ class LatencyListener(ssc: StreamingContext, commonConfig: Map[String, Any]) ext
         val imap = getMap
 
         imap("Final Metric") = " Total Batch count = " + batchCount+
+          ", startTime based on submissionTime = "+startTime +
+        ", startTime based on System = "+startTime1 +
+          ", endTime based on System= "+endTime +
+        ", endTime based on processingEndTime = "+endTime1 +
         ", Total Records = "+totalRecords+
         ", Total processing delay = " + totalDelay + " ms "+
         ", Total Consumed time = " + totalTime + " s " +
@@ -117,6 +124,7 @@ class LatencyListener(ssc: StreamingContext, commonConfig: Map[String, Any]) ext
     } else if (!hasStarted) {
       if (batchInfo.numRecords>0) {
         startTime = batchCompleted.batchInfo.submissionTime
+        startTime1 =  System.currentTimeMillis()
         hasStarted = true
       }
     }
