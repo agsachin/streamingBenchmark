@@ -330,9 +330,35 @@ fi
 
 }
 
+killZookeeper(){
+echo "" ;echo "" ;echo "**********kill zookeeper**********"
+killedZookeeperCount1=`pssh -h ${kafkaHostFile} -i "ps aux | grep zoo.cfg  |grep -v grep | head -1 | cut -d ' ' -f 2 |xargs kill -9 "|grep SUCCESS|wc -l `
+if [ "${killedZookeeperCount1}" == "3" ]; then
+	echo "Success1!!"
+else
+  killedZookeeperCount2=`pssh -h ${kafkaHostFile} -i "ps aux | grep zoo.cfg  |grep -v grep | head -1 | cut -d ' ' -f 3 |xargs kill -9 "|grep SUCCESS|wc -l `
+  if [ "$((killedZookeeperCount1+killedZookeeperCount2))" == 3 ]; then
+    echo "Success2!!"
+  else
+    killedZookeeperCount3=`pssh -h ${kafkaHostFile} -i "ps aux | grep zoo.cfg  |grep -v grep | head -1 | cut -d ' ' -f 2 |xargs kill -9 "|grep SUCCESS|wc -l `
+    if [ "$((killedZookeeperCount1+killedZookeeperCount2+killedZookeeperCount3))" == 3 ]; then
+      echo "Success3!!"
+    else
+      if [ "$((killedZookeeperCount1+killedZookeeperCount2+killedZookeeperCount3))" == 0 ]; then
+        echo "no zookeeper running"
+      else
+        echo "failed!!"
+      fi
+    fi
+  fi
+fi
+}
+
    case $1 in
         "--killSparkBenchmarkJob" )
           killSparkBenchmarkJob;;
+        "--killZookeeper" )
+          killZookeeper;;
         "--runSparkSubmit" )
         if [ $# -eq 6 ]; then
              runSparkSubmit $2 $3 $4 $5 $6
@@ -352,10 +378,14 @@ fi
         "--cleanKafka" )
           cleanKafka;;
         "--restartKafkaCluster" )
-          cleanKafka;startZookeper;startKafka;;
+          cleanKafka;
+          killZookeeper;
+          startZookeper;
+          startKafka;;
           *)
             echo $"Usage: $0 {
-            --restartKafkaCluster (all steps: cleanKafka,startZookeper,startKafka)
+            --restartKafkaCluster (all steps: cleanKafka,killZookeeper,startZookeper,startKafka)
+            --killZookeeper
             --killSparkBenchmarkJob
             --runSparkSubmit processId performanceBatchTime kafkaLoaderThread kafkaLoaderThreadLimit windowSize
             --runPushToKafka processId performanceBatchTime kafkaLoaderThread kafkaLoaderThreadLimit windowSize
