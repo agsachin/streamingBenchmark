@@ -84,7 +84,7 @@ object TwitterStreaming {
     //.set("spark.eventLog.dir","file:///tmp/spark-events")
 
     val ssc = new StreamingContext(sparkConf, Milliseconds(batchSize))
-    ssc.checkpoint(checkPointPath)
+    //ssc.checkpoint(checkPointPath)
 
     val listener = new LatencyListener(ssc,commonConfig)
     ssc.addStreamingListener(listener)

@@ -112,8 +112,9 @@ object PushToKafka {
             if (count <= recordLimitPerThread-1) {
               val text = new JsonParser().parse(line).getAsJsonObject().get("text")
               val id = r.nextInt(kafkaPartitions)
-              val data: KeyedMessage[String, String] = new KeyedMessage[String, String](topic, id.toString, text.toString)
-             producer.send(data)
+              val data: KeyedMessage[String, String] = new KeyedMessage[String, String](topic, id.toString, id.toString, text.toString)
+            println(id)
+              // producer.send(data)
             }else{
               bufferedSource.close
             }
