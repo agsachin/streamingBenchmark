@@ -122,7 +122,7 @@ else
             exit -1
           fi
           sleep 30s
-          sh ${runBenchmarkScript} --runSparkSubmit $count 500 50 2000000 60000
+          sh ${runBenchmarkScript} --runSparkSubmit $count 500 54 2000000 60000
           if [ "$?" = "0" ]; then
             echo "Sucess!!"
           else
@@ -130,7 +130,7 @@ else
             exit -1
           fi
           sleep 30s
-          sh ${runBenchmarkScript} --runPushToKafka $count 500 50 2000000 60000
+          sh ${runBenchmarkScript} --runPushToKafka $count 500 54 2000000 60000
           if [ "$?" = "0" ]; then
             echo "Sucess!!"
           else
@@ -147,7 +147,7 @@ else
             exit -1
           fi
           sleep 30s
-          sh ${runBenchmarkScript} --runSparkSubmit $count 500 40 2500000 60000
+          sh ${runBenchmarkScript} --runSparkSubmit $count 500 45 2500000 60000
           if [ "$?" = "0" ]; then
             echo "Sucess!!"
           else
@@ -155,7 +155,7 @@ else
             exit -1
           fi
           sleep 30s
-          sh ${runBenchmarkScript} --runPushToKafka $count 500 40 2500000 60000
+          sh ${runBenchmarkScript} --runPushToKafka $count 500 45 2500000 60000
           if [ "$?" = "0" ]; then
             echo "Sucess!!"
           else
@@ -172,7 +172,7 @@ else
             exit -1
           fi
           sleep 30s
-          sh ${runBenchmarkScript} --runSparkSubmit $count 500 30 3333334 60000
+          sh ${runBenchmarkScript} --runSparkSubmit $count 500 36 3333334 60000
           if [ "$?" = "0" ]; then
             echo "Sucess!!"
           else
@@ -180,7 +180,7 @@ else
             exit -1
           fi
           sleep 30s
-          sh ${runBenchmarkScript} --runPushToKafka $count 500 30 3333334 60000
+          sh ${runBenchmarkScript} --runPushToKafka $count 500 36 3333334 60000
           if [ "$?" = "0" ]; then
             echo "Sucess!!"
           else
@@ -197,7 +197,7 @@ else
             exit -1
           fi
           sleep 30s
-          sh ${runBenchmarkScript} --runSparkSubmit $count 500 20 5000000 60000
+          sh ${runBenchmarkScript} --runSparkSubmit $count 500 24 5000000 60000
           if [ "$?" = "0" ]; then
             echo "Sucess!!"
           else
@@ -205,7 +205,7 @@ else
             exit -1
           fi
           sleep 30s
-          sh ${runBenchmarkScript} --runPushToKafka $count 500 20 5000000 60000
+          sh ${runBenchmarkScript} --runPushToKafka $count 500 24 5000000 60000
           if [ "$?" = "0" ]; then
             echo "Sucess!!"
           else
@@ -222,7 +222,7 @@ else
             exit -1
           fi
           sleep 30s
-          sh ${runBenchmarkScript} --runSparkSubmit $count 500 10 10000000 60000
+          sh ${runBenchmarkScript} --runSparkSubmit $count 500 12 10000000 60000
           if [ "$?" = "0" ]; then
             echo "Sucess!!"
           else
@@ -230,7 +230,7 @@ else
             exit -1
           fi
           sleep 30s
-          sh ${runBenchmarkScript} --runPushToKafka $count 500 10 10000000 60000
+          sh ${runBenchmarkScript} --runPushToKafka $count 500 12 10000000 60000
           if [ "$?" = "0" ]; then
             echo "Sucess!!"
           else
@@ -247,7 +247,7 @@ else
             exit -1
           fi
           sleep 30s
-          sh ${runBenchmarkScript} --runSparkSubmit $count 500 5 20000000 60000
+          sh ${runBenchmarkScript} --runSparkSubmit $count 500 6 20000000 60000
           if [ "$?" = "0" ]; then
             echo "Sucess!!"
           else
@@ -255,7 +255,7 @@ else
             exit -1
           fi
           sleep 30s
-          sh ${runBenchmarkScript} --runPushToKafka $count 500 5 20000000 60000
+          sh ${runBenchmarkScript} --runPushToKafka $count 500 6 20000000 60000
           if [ "$?" = "0" ]; then
             echo "Sucess!!"
           else
