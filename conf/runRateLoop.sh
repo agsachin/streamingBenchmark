@@ -263,6 +263,356 @@ else
             exit -1
           fi
           ;;
+        "8")
+          sh ${runBenchmarkScript} --restartKafkaCluster
+          if [ "$?" = "0" ]; then
+            echo "Sucess!!"
+          else
+            echo "failed!!"
+            exit -1
+          fi
+          sleep 30s
+          sh ${runBenchmarkScript} --runSparkSubmit $count 600 60 1666667 63000
+          if [ "$?" = "0" ]; then
+            echo "Sucess!!"
+          else
+            echo "failed!!"
+            exit -1
+          fi
+          sleep 30s
+          sh ${runBenchmarkScript} --runPushToKafka $count 600 60 1666667 63000
+          if [ "$?" = "0" ]; then
+            echo "Sucess!!"
+          else
+            echo "failed!!"
+            exit -1
+          fi
+          ;;
+        "9" )
+          sh ${runBenchmarkScript} --restartKafkaCluster
+          if [ "$?" = "0" ]; then
+            echo "Sucess!!"
+          else
+            echo "failed!!"
+            exit -1
+          fi
+          sleep 30s
+          sh ${runBenchmarkScript} --runSparkSubmit $count 600 54 2000000 60000
+          if [ "$?" = "0" ]; then
+            echo "Sucess!!"
+          else
+            echo "failed!!"
+            exit -1
+          fi
+          sleep 30s
+          sh ${runBenchmarkScript} --runPushToKafka $count 600 54 2000000 60000
+          if [ "$?" = "0" ]; then
+            echo "Sucess!!"
+          else
+            echo "failed!!"
+            exit -1
+          fi
+          ;;
+        "10" )
+          sh ${runBenchmarkScript} --restartKafkaCluster
+          if [ "$?" = "0" ]; then
+            echo "Sucess!!"
+          else
+            echo "failed!!"
+            exit -1
+          fi
+          sleep 30s
+          sh ${runBenchmarkScript} --runSparkSubmit $count 600 45 2500000 60000
+          if [ "$?" = "0" ]; then
+            echo "Sucess!!"
+          else
+            echo "failed!!"
+            exit -1
+          fi
+          sleep 30s
+          sh ${runBenchmarkScript} --runPushToKafka $count 600 45 2500000 60000
+          if [ "$?" = "0" ]; then
+            echo "Sucess!!"
+          else
+            echo "failed!!"
+            exit -1
+          fi
+          ;;
+        "11" )
+          sh ${runBenchmarkScript} --restartKafkaCluster
+          if [ "$?" = "0" ]; then
+            echo "Sucess!!"
+          else
+            echo "failed!!"
+            exit -1
+          fi
+          sleep 30s
+          sh ${runBenchmarkScript} --runSparkSubmit $count 600 36 3333334 60000
+          if [ "$?" = "0" ]; then
+            echo "Sucess!!"
+          else
+            echo "failed!!"
+            exit -1
+          fi
+          sleep 30s
+          sh ${runBenchmarkScript} --runPushToKafka $count 600 36 3333334 60000
+          if [ "$?" = "0" ]; then
+            echo "Sucess!!"
+          else
+            echo "failed!!"
+            exit -1
+          fi
+          ;;
+        "12" )
+          sh ${runBenchmarkScript} --restartKafkaCluster
+          if [ "$?" = "0" ]; then
+            echo "Sucess!!"
+          else
+            echo "failed!!"
+            exit -1
+          fi
+          sleep 30s
+          sh ${runBenchmarkScript} --runSparkSubmit $count 600 24 5000000 60000
+          if [ "$?" = "0" ]; then
+            echo "Sucess!!"
+          else
+            echo "failed!!"
+            exit -1
+          fi
+          sleep 30s
+          sh ${runBenchmarkScript} --runPushToKafka $count 600 24 5000000 60000
+          if [ "$?" = "0" ]; then
+            echo "Sucess!!"
+          else
+            echo "failed!!"
+            exit -1
+          fi
+          ;;
+        "13" )
+          sh ${runBenchmarkScript} --restartKafkaCluster
+          if [ "$?" = "0" ]; then
+            echo "Sucess!!"
+          else
+            echo "failed!!"
+            exit -1
+          fi
+          sleep 30s
+          sh ${runBenchmarkScript} --runSparkSubmit $count 600 12 10000000 60000
+          if [ "$?" = "0" ]; then
+            echo "Sucess!!"
+          else
+            echo "failed!!"
+            exit -1
+          fi
+          sleep 30s
+          sh ${runBenchmarkScript} --runPushToKafka $count 600 12 10000000 60000
+          if [ "$?" = "0" ]; then
+            echo "Sucess!!"
+          else
+            echo "failed!!"
+            exit -1
+          fi
+          ;;
+        "14" )
+          sh ${runBenchmarkScript} --restartKafkaCluster
+          if [ "$?" = "0" ]; then
+            echo "Sucess!!"
+          else
+            echo "failed!!"
+            exit -1
+          fi
+          sleep 30s
+          sh ${runBenchmarkScript} --runSparkSubmit $count 600 6 20000000 60000
+          if [ "$?" = "0" ]; then
+            echo "Sucess!!"
+          else
+            echo "failed!!"
+            exit -1
+          fi
+          sleep 30s
+          sh ${runBenchmarkScript} --runPushToKafka $count 600 6 20000000 60000
+          if [ "$?" = "0" ]; then
+            echo "Sucess!!"
+          else
+            echo "failed!!"
+            exit -1
+          fi
+          ;;
+        "15")
+          sh ${runBenchmarkScript} --restartKafkaCluster
+          if [ "$?" = "0" ]; then
+            echo "Sucess!!"
+          else
+            echo "failed!!"
+            exit -1
+          fi
+          sleep 30s
+          sh ${runBenchmarkScript} --runSparkSubmit $count 700 60 1666667 63000
+          if [ "$?" = "0" ]; then
+            echo "Sucess!!"
+          else
+            echo "failed!!"
+            exit -1
+          fi
+          sleep 30s
+          sh ${runBenchmarkScript} --runPushToKafka $count 700 60 1666667 63000
+          if [ "$?" = "0" ]; then
+            echo "Sucess!!"
+          else
+            echo "failed!!"
+            exit -1
+          fi
+          ;;
+        "16" )
+          sh ${runBenchmarkScript} --restartKafkaCluster
+          if [ "$?" = "0" ]; then
+            echo "Sucess!!"
+          else
+            echo "failed!!"
+            exit -1
+          fi
+          sleep 30s
+          sh ${runBenchmarkScript} --runSparkSubmit $count 700 54 2000000 60000
+          if [ "$?" = "0" ]; then
+            echo "Sucess!!"
+          else
+            echo "failed!!"
+            exit -1
+          fi
+          sleep 30s
+          sh ${runBenchmarkScript} --runPushToKafka $count 700 54 2000000 60000
+          if [ "$?" = "0" ]; then
+            echo "Sucess!!"
+          else
+            echo "failed!!"
+            exit -1
+          fi
+          ;;
+        "17" )
+          sh ${runBenchmarkScript} --restartKafkaCluster
+          if [ "$?" = "0" ]; then
+            echo "Sucess!!"
+          else
+            echo "failed!!"
+            exit -1
+          fi
+          sleep 30s
+          sh ${runBenchmarkScript} --runSparkSubmit $count 700 45 2500000 60000
+          if [ "$?" = "0" ]; then
+            echo "Sucess!!"
+          else
+            echo "failed!!"
+            exit -1
+          fi
+          sleep 30s
+          sh ${runBenchmarkScript} --runPushToKafka $count 700 45 2500000 60000
+          if [ "$?" = "0" ]; then
+            echo "Sucess!!"
+          else
+            echo "failed!!"
+            exit -1
+          fi
+          ;;
+        "18" )
+          sh ${runBenchmarkScript} --restartKafkaCluster
+          if [ "$?" = "0" ]; then
+            echo "Sucess!!"
+          else
+            echo "failed!!"
+            exit -1
+          fi
+          sleep 30s
+          sh ${runBenchmarkScript} --runSparkSubmit $count 700 36 3333334 60000
+          if [ "$?" = "0" ]; then
+            echo "Sucess!!"
+          else
+            echo "failed!!"
+            exit -1
+          fi
+          sleep 30s
+          sh ${runBenchmarkScript} --runPushToKafka $count 700 36 3333334 60000
+          if [ "$?" = "0" ]; then
+            echo "Sucess!!"
+          else
+            echo "failed!!"
+            exit -1
+          fi
+          ;;
+        "19" )
+          sh ${runBenchmarkScript} --restartKafkaCluster
+          if [ "$?" = "0" ]; then
+            echo "Sucess!!"
+          else
+            echo "failed!!"
+            exit -1
+          fi
+          sleep 30s
+          sh ${runBenchmarkScript} --runSparkSubmit $count 700 24 5000000 60000
+          if [ "$?" = "0" ]; then
+            echo "Sucess!!"
+          else
+            echo "failed!!"
+            exit -1
+          fi
+          sleep 30s
+          sh ${runBenchmarkScript} --runPushToKafka $count 700 24 5000000 60000
+          if [ "$?" = "0" ]; then
+            echo "Sucess!!"
+          else
+            echo "failed!!"
+            exit -1
+          fi
+          ;;
+        "20" )
+          sh ${runBenchmarkScript} --restartKafkaCluster
+          if [ "$?" = "0" ]; then
+            echo "Sucess!!"
+          else
+            echo "failed!!"
+            exit -1
+          fi
+          sleep 30s
+          sh ${runBenchmarkScript} --runSparkSubmit $count 700 12 10000000 60000
+          if [ "$?" = "0" ]; then
+            echo "Sucess!!"
+          else
+            echo "failed!!"
+            exit -1
+          fi
+          sleep 30s
+          sh ${runBenchmarkScript} --runPushToKafka $count 700 12 10000000 60000
+          if [ "$?" = "0" ]; then
+            echo "Sucess!!"
+          else
+            echo "failed!!"
+            exit -1
+          fi
+          ;;
+        "21" )
+          sh ${runBenchmarkScript} --restartKafkaCluster
+          if [ "$?" = "0" ]; then
+            echo "Sucess!!"
+          else
+            echo "failed!!"
+            exit -1
+          fi
+          sleep 30s
+          sh ${runBenchmarkScript} --runSparkSubmit $count 700 6 20000000 60000
+          if [ "$?" = "0" ]; then
+            echo "Sucess!!"
+          else
+            echo "failed!!"
+            exit -1
+          fi
+          sleep 30s
+          sh ${runBenchmarkScript} --runPushToKafka $count 700 6 20000000 60000
+          if [ "$?" = "0" ]; then
+            echo "Sucess!!"
+          else
+            echo "failed!!"
+            exit -1
+          fi
+          ;;
         *)
           echo $"Usage: $0 {
           sh ${runBenchmarkScript} --runSparkSubmit processId performanceBatchTime kafkaLoaderThread kafkaLoaderThreadLimit
