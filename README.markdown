@@ -1,8 +1,8 @@
-Comparison of various streaming technologies
+<H1>Comparison of various streaming technologies</H1>
 
 This meetup will take us through the various streaming technologies such as Storm, Flink, Infosphere Streams and Spark Streaming. 
 
-Agenda
+<H2>Agenda</H2>
 
 • Characteristics of streaming technologies
 
