@@ -109,7 +109,7 @@ object PushToKafka {
 //              count=i;
 //            }
           bufferedSource.getLines.foreach(line => {
-            if (count <= recordLimitPerThread-1) {
+            if (count <= recordLimitPerThread+10000) {
               val text = new JsonParser().parse(line).getAsJsonObject().get("text")
               val id = r.nextInt(kafkaPartitions)
               val data: KeyedMessage[String, String] = new KeyedMessage[String, String](topic, id.toString, id.toString, text.toString)

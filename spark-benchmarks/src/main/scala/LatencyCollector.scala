@@ -74,18 +74,18 @@ class LatencyListener(ssc: StreamingContext, commonConfig: Map[String, Any]) ext
 
     if (!thread.isAlive) {
       totalRecords += recordThisBatch
-      val imap = getMap
-      imap(batchInfo.batchTime.toString()) = "batchTime," + batchInfo.batchTime +
-        ", batch Count so far," + batchCount +
-        ", total Records so far," + totalRecords +
-        ", record This Batch," + recordThisBatch +
-        ", submission Time," + batchInfo.submissionTime +
-        ", processing Start Time," + batchInfo.processingStartTime.getOrElse(0L) +
-        ", processing End Time," + batchInfo.processingEndTime.getOrElse(0L) +
-        ", scheduling Delay," + batchInfo.schedulingDelay.getOrElse(0L) +
-        ", processing Delay," + batchInfo.processingDelay.getOrElse(0L)
-
-      setMap(imap)
+//      val imap = getMap
+//      imap(batchInfo.batchTime.toString()) = "batchTime," + batchInfo.batchTime +
+//        ", batch Count so far," + batchCount +
+//        ", total Records so far," + totalRecords +
+//        ", record This Batch," + recordThisBatch +
+//        ", submission Time," + batchInfo.submissionTime +
+//        ", processing Start Time," + batchInfo.processingStartTime.getOrElse(0L) +
+//        ", processing End Time," + batchInfo.processingEndTime.getOrElse(0L) +
+//        ", scheduling Delay," + batchInfo.schedulingDelay.getOrElse(0L) +
+//        ", processing Delay," + batchInfo.processingDelay.getOrElse(0L)
+//
+//      setMap(imap)
    }
 
     if (totalRecords >= recordLimit) {
@@ -105,17 +105,17 @@ class LatencyListener(ssc: StreamingContext, commonConfig: Map[String, Any]) ext
 
         val imap = getMap
 
-        imap("Final Metric") = " Total Batch count = " + batchCount+
-          ", startTime based on submissionTime = "+startTime +
-        ", startTime based on System = "+startTime1 +
-          ", endTime based on System= "+endTime +
-        ", endTime based on processingEndTime = "+endTime1 +
-        ", Total Records = "+totalRecords+
-        ", Total processing delay = " + totalDelay + " ms "+
-        ", Total Consumed time = " + totalTime + " s " +
-        ", Avg latency/batchInterval = " + avgLatencyAdjust + " ms "+
-        ", Avg records/sec = " + recordThroughput + " records/s " +
-        ", WARNING = "+ warning
+        imap("Final Metric") = " Total Batch count," + batchCount+
+          ", startTime based on submissionTime,"+startTime +
+        ", startTime based on System,"+startTime1 +
+          ", endTime based on System,"+endTime +
+        ", endTime based on processingEndTime,"+endTime1 +
+        ", Total Records,"+totalRecords+
+       // ", Total processing delay = " + totalDelay + " ms "+
+        ", Total Consumed time in sec," + totalTime +
+        ", Avg latency/batchInterval in ms," + avgLatencyAdjust +
+        ", Avg records/sec," + recordThroughput +
+        ", WARNING,"+ warning
 
         imap.foreach {case (key, value) => println(key + "-->" + value)}
 
