@@ -34,7 +34,7 @@ case class BatchData(batchInfo: BatchInfo, batchCount: Long, totalRecords: Long,
     "," + recordThisBatch + "," + batchInfo.submissionTime + "," + batchInfo.processingStartTime + "," +
     batchInfo.processingEndTime + "," + batchInfo.schedulingDelay + "," + batchInfo.processingDelay + "," +
     (batchInfo.addl.actual.milliseconds - batchInfo.batchTime.milliseconds) + "," +
-    (batchInfo.addl.queTime - batchInfo.addl.actual.milliseconds)
+    (batchInfo.addl.queTime - batchInfo.addl.actual.milliseconds) + "," +
     (batchInfo.addl.allocBlockEnd - batchInfo.addl.queTime) + "," +
     (batchInfo.addl.genEnd - batchInfo.addl.allocBlockEnd) + "," +
     (batchInfo.addl.streamEnd - batchInfo.addl.genEnd)
