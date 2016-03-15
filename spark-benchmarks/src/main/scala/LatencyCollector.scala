@@ -28,10 +28,21 @@ class StopContextThread(ssc: StreamingContext) extends Runnable {
   }
 }
 
+case class BatchData(batchInfo: BatchInfo, batchCount: Long, totalRecords: Long, recordThisBatch: Long) {
+
+  override def toString(): String =  "" +  batchInfo.batchTime.milliseconds + "," + batchCount + "," + totalRecords +
+    "," + recordThisBatch + "," + batchInfo.submissionTime + "," + batchInfo.processingStartTime + "," +
+    batchInfo.processingEndTime + "," + batchInfo.schedulingDelay + "," + batchInfo.processingDelay + "," +
+    (batchInfo.addl.actual.milliseconds - batchInfo.batchTime.milliseconds) + "," +
+    (batchInfo.addl.allocBlockEnd - batchInfo.addl.actual.milliseconds) + "," +
+    (batchInfo.addl.genEnd - batchInfo.addl.allocBlockEnd) + "," +
+    (batchInfo.addl.streamEnd - batchInfo.addl.genEnd)
+
+}
 
 class LatencyListener(ssc: StreamingContext, commonConfig: Map[String, Any]) extends StreamingListener {
 
-  var metricMap: scala.collection.mutable.Map[String, Object] = _
+  var metricMap: scala.collection.mutable.Map[String, BatchData] = _
   var startTime = 0L
   var startTime1 = 0L
   var endTime = 0L
@@ -43,12 +54,12 @@ class LatencyListener(ssc: StreamingContext, commonConfig: Map[String, Any]) ext
   val thread: Thread = new Thread(new StopContextThread(ssc))
 
 
-  def getMap(): scala.collection.mutable.Map[String, Object] = synchronized {
+  def getMap(): scala.collection.mutable.Map[String, BatchData] = synchronized {
     if (metricMap == null) metricMap = scala.collection.mutable.Map()
     metricMap
   }
 
-  def setMap(metricMap: scala.collection.mutable.Map[String, Object]) = synchronized {
+  def setMap(metricMap: scala.collection.mutable.Map[String, BatchData]) = synchronized {
     this.metricMap = metricMap
   }
 
@@ -74,18 +85,21 @@ class LatencyListener(ssc: StreamingContext, commonConfig: Map[String, Any]) ext
 
     if (!thread.isAlive) {
       totalRecords += recordThisBatch
-//      val imap = getMap
-//      imap(batchInfo.batchTime.toString()) = "batchTime," + batchInfo.batchTime +
-//        ", batch Count so far," + batchCount +
-//        ", total Records so far," + totalRecords +
-//        ", record This Batch," + recordThisBatch +
-//        ", submission Time," + batchInfo.submissionTime +
-//        ", processing Start Time," + batchInfo.processingStartTime.getOrElse(0L) +
-//        ", processing End Time," + batchInfo.processingEndTime.getOrElse(0L) +
-//        ", scheduling Delay," + batchInfo.schedulingDelay.getOrElse(0L) +
-//        ", processing Delay," + batchInfo.processingDelay.getOrElse(0L)
-//
-//      setMap(imap)
+      val imap = getMap
+      imap(batchInfo.batchTime.toString()) = BatchData(batchInfo,
+        batchCount, totalRecords, recordThisBatch)
+
+        /*"batchTime," + batchInfo.batchTime +
+        ", batch Count so far," + batchCount +
+        ", total Records so far," + totalRecords +
+        ", record This Batch," + recordThisBatch +
+        ", submission Time," + batchInfo.submissionTime +
+        ", processing Start Time," + batchInfo.processingStartTime.getOrElse(0L) +
+        ", processing End Time," + batchInfo.processingEndTime.getOrElse(0L) +
+        ", scheduling Delay," + batchInfo.schedulingDelay.getOrElse(0L) +
+        ", processing Delay," + batchInfo.processingDelay.getOrElse(0L) */
+
+      setMap(imap)
    }
 
     if (totalRecords >= recordLimit) {
@@ -105,7 +119,7 @@ class LatencyListener(ssc: StreamingContext, commonConfig: Map[String, Any]) ext
 
         val imap = getMap
 
-        imap("Final Metric") = " Total Batch count," + batchCount+
+        /*imap("Final Metric") = " Total Batch count," + batchCount +
           ", startTime based on submissionTime,"+startTime +
         ", startTime based on System,"+startTime1 +
           ", endTime based on System,"+endTime +
@@ -115,9 +129,25 @@ class LatencyListener(ssc: StreamingContext, commonConfig: Map[String, Any]) ext
         ", Total Consumed time in sec," + totalTime +
         ", Avg latency/batchInterval in ms," + avgLatencyAdjust +
         ", Avg records/sec," + recordThroughput +
-        ", WARNING,"+ warning
+        ", WARNING,"+ warning */
 
-        imap.foreach {case (key, value) => println(key + "-->" + value)}
+        println("batchTime,batchCount,totalRecords,recordThisBatch,submissionTime,processingStartTime," +
+          "processingEndTime,schedulingDelay,processingDelay,actualDiff,blockEndDiff,genEndDiff, streamEndDiff")
+
+        //imap.foreach {case (key, value) => println(key + "-->" + value)}
+        imap.foreach {case (key, value) => println(value.toString )}
+
+        println(" Total Batch count," + batchCount +
+         ", startTime based on submissionTime,"+startTime +
+       ", startTime based on System,"+startTime1 +
+         ", endTime based on System,"+endTime +
+       ", endTime based on processingEndTime,"+endTime1 +
+       ", Total Records,"+totalRecords+
+      // ", Total processing delay = " + totalDelay + " ms "+
+       ", Total Consumed time in sec," + totalTime +
+       ", Avg latency/batchInterval in ms," + avgLatencyAdjust +
+       ", Avg records/sec," + recordThroughput +
+       ", WARNING,"+ warning )
 
         thread.start
       }
