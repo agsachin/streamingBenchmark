@@ -30,14 +30,20 @@ class StopContextThread(ssc: StreamingContext) extends Runnable {
 
 case class BatchData(batchInfo: BatchInfo, batchCount: Long, totalRecords: Long, recordThisBatch: Long) {
 
-  override def toString(): String =  "" +  batchInfo.batchTime.milliseconds + "," + batchCount + "," + totalRecords +
-    "," + recordThisBatch + "," + batchInfo.submissionTime + "," + batchInfo.processingStartTime + "," +
-    batchInfo.processingEndTime + "," + batchInfo.schedulingDelay + "," + batchInfo.processingDelay + "," +
-    (batchInfo.addl.actual.milliseconds - batchInfo.batchTime.milliseconds) + "," +
-    (batchInfo.addl.queTime - batchInfo.addl.actual.milliseconds) + "," +
-    (batchInfo.addl.allocBlockEnd - batchInfo.addl.queTime) + "," +
-    (batchInfo.addl.genEnd - batchInfo.addl.allocBlockEnd) + "," +
-    (batchInfo.addl.streamEnd - batchInfo.addl.genEnd)
+  override def toString(): String = {
+    val kakfacompute = batchInfo.addl.kafka.end - batchInfo.addl.kafka.start
+    val remngGenJobTime = (batchInfo.addl.genEnd - batchInfo.addl.allocBlockEnd) - kakfacompute
+
+    "" + batchInfo.batchTime.milliseconds + "," + batchCount + "," + totalRecords +
+      "," + recordThisBatch + "," + batchInfo.submissionTime + "," + batchInfo.processingStartTime + "," +
+      batchInfo.processingEndTime + "," + batchInfo.schedulingDelay + "," + batchInfo.processingDelay + "," +
+      (batchInfo.addl.actual.milliseconds - batchInfo.batchTime.milliseconds) + "," +
+      (batchInfo.addl.queTime - batchInfo.addl.actual.milliseconds) + "," +
+      (batchInfo.addl.allocBlockEnd - batchInfo.addl.queTime) + "," +
+      (batchInfo.addl.genEnd - batchInfo.addl.allocBlockEnd) + "," +
+      kakfacompute + "," + remngGenJobTime + "," +
+      (batchInfo.addl.streamEnd - batchInfo.addl.genEnd)
+  }
 
 }
 
@@ -45,7 +51,7 @@ object BatchData {
   def header(): String = {
     "batchTime,batchCount,totalRecords,recordThisBatch,submissionTime,processingStartTime," +
       "processingEndTime,schedulingDelay,processingDelay,actualDiff," +
-      "QueueTime, blockEndDiff,genEndDiff, streamEndDiff"
+      "QueueTime, blockcreate,genJobTime, kafkacomputeTime, remngGenJobTime, streamEndDiff"
   }
 }
 
