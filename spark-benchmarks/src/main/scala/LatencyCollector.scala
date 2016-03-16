@@ -140,6 +140,7 @@ class LatencyListener(ssc: StreamingContext, commonConfig: Map[String, Any]) ext
         ", Avg records/sec," + recordThroughput +
         ", WARNING,"+ warning */
 
+        println("")
         println(BatchData.header())
 
         //imap.foreach {case (key, value) => println(key + "-->" + value)}
