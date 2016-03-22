@@ -32,6 +32,7 @@ case class BatchData(batchInfo: BatchInfo, batchCount: Long, totalRecords: Long,
 
   override def toString(): String = {
     val kakfacompute = batchInfo.addl.kafka.end - batchInfo.addl.kafka.start
+    val windowCompute = batchInfo.addl.window.end - batchInfo.addl.window.start
     val remngGenJobTime = (batchInfo.addl.genEnd - batchInfo.addl.allocBlockEnd) - kakfacompute
 
     "" + batchInfo.batchTime.milliseconds + "," + batchCount + "," + totalRecords +
@@ -39,10 +40,9 @@ case class BatchData(batchInfo: BatchInfo, batchCount: Long, totalRecords: Long,
       batchInfo.processingEndTime + "," + batchInfo.schedulingDelay + "," + batchInfo.processingDelay + "," +
       (batchInfo.addl.actual.milliseconds - batchInfo.batchTime.milliseconds) + "," +
       (batchInfo.addl.queTime - batchInfo.addl.actual.milliseconds) + "," +
-      (batchInfo.addl.allocBlockEnd - batchInfo.addl.queTime) + "," +
       (batchInfo.addl.genEnd - batchInfo.addl.allocBlockEnd) + "," +
-      kakfacompute + "," + remngGenJobTime + "," +
-      (batchInfo.addl.streamEnd - batchInfo.addl.genEnd)
+      kakfacompute + "," + remngGenJobTime + "," + windowCompute
+
   }
 
 }
@@ -51,7 +51,7 @@ object BatchData {
   def header(): String = {
     "batchTime,batchCount,totalRecords,recordThisBatch,submissionTime,processingStartTime," +
       "processingEndTime,schedulingDelay,processingDelay,actualDiff," +
-      "QueueTime, blockcreate,genJobTime, kafkacomputeTime, remngGenJobTime, streamEndDiff"
+      "QueueTime, genJobTime, kafkacomputeTime, remngGenJobTime, windowTime"
   }
 }
 
