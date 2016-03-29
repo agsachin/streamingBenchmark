@@ -23,7 +23,8 @@ storm.ackers: 2
 spark.twitterPull.batchTime: 200000
 spark.performance.batchTime: #performanceBatchTime#
 spark.performance.windowSize: #windowSize#
-spark.performance.checkPointPath: "/tmp/checkpointPath/"
+#spark.performance.checkPointPath: "/tmp/checkpointPath/"
+spark.performance.checkPointPath: "hdfs://10.168.102.170:9000//user/checpkoint/"
 
 
 kafka.serializer: "kafka.serializer.StringEncoder"
