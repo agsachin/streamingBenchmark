@@ -34,6 +34,8 @@ case class BatchData(batchInfo: BatchInfo, batchCount: Long, totalRecords: Long,
     val kakfacompute = batchInfo.addl.kafka.end - batchInfo.addl.kafka.start
     val windowCompute = batchInfo.addl.window.end - batchInfo.addl.window.start
     val remngGenJobTime = (batchInfo.addl.genEnd - batchInfo.addl.allocBlockEnd) - kakfacompute
+    val dstreamCompute = (batchInfo.addl.kafka.end - batchInfo.addl.allocBlockEnd)   
+    val rddCompute = (batchInfo.addl.genEnd - batchInfo.addl.kafka.end)   
 
     "" + batchInfo.batchTime.milliseconds + "," + batchCount + "," + totalRecords +
       "," + recordThisBatch + "," + batchInfo.submissionTime + "," + batchInfo.processingStartTime + "," +
@@ -41,7 +43,7 @@ case class BatchData(batchInfo: BatchInfo, batchCount: Long, totalRecords: Long,
       (batchInfo.addl.actual.milliseconds - batchInfo.batchTime.milliseconds) + "," +
       (batchInfo.addl.queTime - batchInfo.addl.actual.milliseconds) + "," +
       (batchInfo.addl.genEnd - batchInfo.addl.allocBlockEnd) + "," +
-      kakfacompute + "," + remngGenJobTime + "," + windowCompute
+      kakfacompute + "," + remngGenJobTime + "," + windowCompute + "," + dstreamCompute + "," + rddCompute
 
   }
 
@@ -51,7 +53,7 @@ object BatchData {
   def header(): String = {
     "batchTime,batchCount,totalRecords,recordThisBatch,submissionTime,processingStartTime," +
       "processingEndTime,schedulingDelay,processingDelay,actualDiff," +
-      "QueueTime, genJobTime, kafkacomputeTime, remngGenJobTime, windowTime"
+      "QueueTime, genJobTime, kafkacomputeTime, remngGenJobTime, windowTime, DstreamEnd"
   }
 }
 
