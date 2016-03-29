@@ -99,7 +99,7 @@ fi
 
 echo "" ;echo "" ;echo "**********launch spark submit**********"
 echo "nohup ${sparkSubmit} --class spark.benchmark.TwitterStreaming --master ${sparkMaster} ${sparkBenchmarkJar} ${confFile} > ~/sparkSubmit_${processId}.log 2>&1 &"
-`nohup ${sparkSubmit} --class spark.benchmark.TwitterStreaming --master ${sparkMaster} ${sparkBenchmarkJar} ${confFile} > sparkSubmit_${processId}.log 2>&1 &`
+`nohup ${sparkSubmit} --class spark.benchmark.TwitterStreaming --master ${sparkMaster} --jars /opt/install/1.6-mod/spark/external/kafka/target/spark-streaming-kafka_2.10-1.6.0-SNAPSHOT.jar ${sparkBenchmarkJar} ${confFile} > sparkSubmit_${processId}.log 2>&1 &`
 
 sleep 10s
 
