@@ -94,5 +94,33 @@
       <url>http://pk11-scratch.googlecode.com/svn/trunk</url>
     </repository>
   </repositories>
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.spark</groupId>
+      <artifactId>spark-streaming_2.10</artifactId>
+      <version>1.6.0</version>
+      <scope>system</scope>
+      <systemPath>/opt/install/streamingBenchmark/spark-benchmarks/../../1.6-mod/spark/streaming/target/spark-streaming_2.10-1.6.0-SNAPSHOT.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.spark</groupId>
+      <artifactId>spark-streaming-kafka_2.10</artifactId>
+      <version>1.6.0</version>
+      <scope>system</scope>
+      <systemPath>/opt/install/streamingBenchmark/spark-benchmarks/../../1.6-mod/spark/external/kafka/target/spark-streaming-kafka_2.10-1.6.0-SNAPSHOT.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.spark</groupId>
+      <artifactId>spark-streaming_${scala.binary.version}</artifactId>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/../../1.6-mod/spark/streaming/target/spark-streaming_2.10-1.6.0-SNAPSHOT.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.spark</groupId>
+      <artifactId>spark-streaming-kafka_${scala.binary.version}</artifactId>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/../../1.6-mod/spark/external/kafka/target/spark-streaming-kafka_2.10-1.6.0-SNAPSHOT.jar</systemPath>
+    </dependency>
+  </dependencies>
 </project>
 
