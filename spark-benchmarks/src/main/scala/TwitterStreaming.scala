@@ -98,9 +98,9 @@ object TwitterStreaming {
     val lines = messages.map(_._2)
     val hashTags = lines.flatMap(status => status.split(" ").filter(_.startsWith("#")))
     //val topCounts60 = hashTags.map((_, 1)).reduceByKeyAndWindow(_ + _, Milliseconds(windowSize))
-    val topCounts60 = hashTags.map((_, 1)).reduceByKeyAndWindow(_ + _, _-_,
-      Milliseconds(windowSize),Milliseconds(batchSize) )
-    //val topCounts60 = hashTags.map((_, 1)).reduceByKey(_ + _)
+    // val topCounts60 = hashTags.map((_, 1)).reduceByKeyAndWindow(_ + _, _-_,
+    //  Milliseconds(windowSize),Milliseconds(batchSize) )
+    val topCounts60 = hashTags.map((_, 1)).reduceByKey(_ + _)
       .map { case (topic, count) => (count, topic) }
       .transform(_.sortByKey(false))
 
