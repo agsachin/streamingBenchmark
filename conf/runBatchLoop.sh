@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 flag=true
-count=1
+count=9
 #cluster
 runBenchmarkScript="/opt/install/streamingBenchmark/conf/runBenchmark.sh"
 
@@ -287,6 +287,7 @@ else
             echo "failed!!"
             exit -1
           fi
+          exit 0
           ;;
         "9" )
           sh ${runBenchmarkScript} --restartKafkaCluster
@@ -297,7 +298,7 @@ else
             exit -1
           fi
           sleep 30s
-          sh ${runBenchmarkScript} --runSparkSubmit $count 200 30 3333334 60000
+          sh ${runBenchmarkScript} --runSparkSubmit $count 50 30 3333334 60000
           if [ "$?" = "0" ]; then
             echo "Sucess!!"
           else
@@ -305,13 +306,14 @@ else
             exit -1
           fi
           sleep 30s
-          sh ${runBenchmarkScript} --runPushToKafka $count 200 30 3333334 60000
+          sh ${runBenchmarkScript} --runPushToKafka $count 50 30 3333334 60000
           if [ "$?" = "0" ]; then
             echo "Sucess!!"
           else
             echo "failed!!"
             exit -1
           fi
+          exit 0
           ;;
         "10" )
           sh ${runBenchmarkScript} --restartKafkaCluster

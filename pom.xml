@@ -32,6 +32,11 @@ Licensed under the terms of the Apache License 2.0. Please see LICENSE file in t
     <dependencyManagement>
         <dependencies>
             <dependency>
+                <groupId>org.json4s</groupId>
+                <artifactId>json4s-native_${scala.version}</artifactId>
+                <version>{latestVersion}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.apache.storm</groupId>
                 <artifactId>storm-core</artifactId>
                 <version>${storm.version}</version>

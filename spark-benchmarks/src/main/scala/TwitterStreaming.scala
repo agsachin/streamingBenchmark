@@ -7,7 +7,7 @@ package spark.benchmark
 import benchmark.common.Utils
 import kafka.serializer.StringDecoder
 import org.apache.log4j.{Level, Logger}
-import org.apache.spark.SparkConf
+import org.apache.spark.{SparkConf,HashPartitioner}
 import org.apache.spark.streaming.kafka.KafkaUtils
 import org.apache.spark.streaming.{Milliseconds, StreamingContext}
 
@@ -79,15 +79,17 @@ object TwitterStreaming {
 
     val sparkConf = new SparkConf()
       .setAppName("TwitterStreaming")
-    //  .set("spark.eventLog.enabled","true")
+      .set("spark.eventLog.enabled","true")
     //.setMaster("local[*]")
-    //.set("spark.eventLog.dir","file:///tmp/spark-events")
+    .set("spark.eventLog.dir","file:///tmp/spark-events")
 
     val ssc = new StreamingContext(sparkConf, Milliseconds(batchSize))
-    ssc.checkpoint(checkPointPath)
+    //ssc.checkpoint(checkPointPath)
 
     val listener = new LatencyListener(ssc,commonConfig)
     ssc.addStreamingListener(listener)
+
+    ssc.sparkContext.addSparkListener(listener)
 
     val kafkaParams = Map[String, String]("metadata.broker.list" -> brokerListString.toString())
     System.err.println(
@@ -98,18 +100,24 @@ object TwitterStreaming {
     val lines = messages.map(_._2)
     val hashTags = lines.flatMap(status => status.split(" ").filter(_.startsWith("#")))
     //val topCounts60 = hashTags.map((_, 1)).reduceByKeyAndWindow(_ + _, Milliseconds(windowSize))
-    val topCounts60 = hashTags.map((_, 1)).reduceByKeyAndWindow(_ + _, _-_,
-      Milliseconds(windowSize),Milliseconds(batchSize) )
-    //val topCounts60 = hashTags.map((_, 1)).reduceByKey(_ + _)
+    //val topCounts60 = hashTags.map((_, 1)).reduceByKeyAndWindow(_ + _, _-_,
+    //  Milliseconds(windowSize),Milliseconds(batchSize) )
+    val topCounts60 = hashTags.map((_, 1)).reduceByKey(_ + _)
       .map { case (topic, count) => (count, topic) }
-      .transform(_.sortByKey(false))
+      //.transform(_.sortByKey(false))
+      //.groupByKey()
 
     topCounts60.foreachRDD(rdd=> {val topList = rdd.take(10)
       val imap = getMap
       topList.foreach{case (count, tag) =>
-        imap(tag) = if (imap.contains(tag)) imap(tag) + count else count
+        //imap(tag) = if (imap.contains(tag)) imap(tag) + count else count
       }
       setMap(imap)
+      /*val imap = getMap
+      rdd.foreach{case (count, tag) =>
+        imap(tag) = if (imap.contains(tag)) imap(tag) + count else count
+      }
+      setMap(imap)*/
     })
 
     sys.ShutdownHookThread {
