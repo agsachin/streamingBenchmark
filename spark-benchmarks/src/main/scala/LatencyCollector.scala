@@ -37,6 +37,7 @@ class LatencyListener(ssc: StreamingContext, commonConfig: Map[String, Any]) ext
   var endTime = 0L
   var endTime1 = 0L
   var totalDelay = 0L
+  var totalJobSetCreationDelay = 0L
   var hasStarted = false
   var batchCount = 0
   var totalRecords = 0L
@@ -74,18 +75,19 @@ class LatencyListener(ssc: StreamingContext, commonConfig: Map[String, Any]) ext
 
     if (!thread.isAlive) {
       totalRecords += recordThisBatch
-//      val imap = getMap
-//      imap(batchInfo.batchTime.toString()) = "batchTime," + batchInfo.batchTime +
-//        ", batch Count so far," + batchCount +
-//        ", total Records so far," + totalRecords +
-//        ", record This Batch," + recordThisBatch +
-//        ", submission Time," + batchInfo.submissionTime +
-//        ", processing Start Time," + batchInfo.processingStartTime.getOrElse(0L) +
-//        ", processing End Time," + batchInfo.processingEndTime.getOrElse(0L) +
-//        ", scheduling Delay," + batchInfo.schedulingDelay.getOrElse(0L) +
-//        ", processing Delay," + batchInfo.processingDelay.getOrElse(0L)
-//
-//      setMap(imap)
+      val imap = getMap
+      imap(batchInfo.batchTime.toString()) = "batchTime," + batchInfo.batchTime +
+        ", batch Count so far," + batchCount +
+        ", total Records so far," + totalRecords +
+        ", record This Batch," + recordThisBatch +
+        ", jobGenerateTime," +batchInfo.batchJobSetCreationDelay +
+        ", submission Time," + batchInfo.submissionTime +
+        ", processing Start Time," + batchInfo.processingStartTime.getOrElse(0L) +
+        ", processing End Time," + batchInfo.processingEndTime.getOrElse(0L) +
+        ", scheduling Delay," + batchInfo.schedulingDelay.getOrElse(0L) +
+        ", processing Delay," + batchInfo.processingDelay.getOrElse(0L)
+
+      setMap(imap)
    }
 
     if (totalRecords >= recordLimit) {
@@ -107,11 +109,11 @@ class LatencyListener(ssc: StreamingContext, commonConfig: Map[String, Any]) ext
 
         imap("Final Metric") = " Total Batch count," + batchCount+
           ", startTime based on submissionTime,"+startTime +
-        ", startTime based on System,"+startTime1 +
+        ", startTime based on System,"+startTime1 +act
           ", endTime based on System,"+endTime +
         ", endTime based on processingEndTime,"+endTime1 +
         ", Total Records,"+totalRecords+
-       // ", Total processing delay = " + totalDelay + " ms "+
+        ", Avg totalJobSetCreationDelay delay = " + totalJobSetCreationDelay/batchCount + " ms "+
         ", Total Consumed time in sec," + totalTime +
         ", Avg latency/batchInterval in ms," + avgLatencyAdjust +
         ", Avg records/sec," + recordThroughput +
@@ -133,6 +135,10 @@ class LatencyListener(ssc: StreamingContext, commonConfig: Map[String, Any]) ext
       //      println("This delay:"+batchCompleted.batchInfo.processingDelay+"ms")
       batchCompleted.batchInfo.processingDelay match {
         case Some(value) => totalDelay += value * recordThisBatch
+        case None => //Nothing
+      }
+      batchCompleted.batchInfo.batchJobSetCreationDelay match {
+        case value:Long => totalJobSetCreationDelay += value
         case None => //Nothing
       }
       batchCount = batchCount + 1
