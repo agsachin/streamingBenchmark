@@ -40,6 +40,7 @@ class LatencyListener(ssc: StreamingContext, commonConfig: Map[String, Any]) ext
   var totalJobSetCreationDelay = 0L
   var totalProcessingDelay = 0L
   var totalProcessingStartDelay = 0L
+  var totalSubimissionDelay = 0L
   var hasStarted = false
   var batchCount = 0
   var totalRecords = 0L
@@ -83,7 +84,8 @@ class LatencyListener(ssc: StreamingContext, commonConfig: Map[String, Any]) ext
         ", total Records so far," + totalRecords +
         ", record This Batch," + recordThisBatch +
         ", jobGenerateTime," +batchInfo.batchJobSetCreationDelay +
-        ", processingStartDelay," + batchInfo.processingStartTime.zip(Option(batchInfo.submissionTime)).map(x => x._1 - x._2).head +
+        ", processing-submission," + batchInfo.processingStartTime.zip(Option(batchInfo.submissionTime)).map(x => x._1 - x._2).head +
+        ", submission-create," + Option(batchInfo.submissionTime).zip(batchInfo.jobSetCreationStartTime).map(x => x._1 - x._2).head +
         ", submission Time," + batchInfo.submissionTime +
         ", processing Start Time," + batchInfo.processingStartTime.getOrElse(0L) +
         ", processing End Time," + batchInfo.processingEndTime.getOrElse(0L) +
@@ -118,7 +120,8 @@ class LatencyListener(ssc: StreamingContext, commonConfig: Map[String, Any]) ext
         ", Total Records,"+totalRecords+
         ", Avg JobSetCreationDelay delay = " + totalJobSetCreationDelay/batchCount + " ms "+
         ", Avg ProcessingDelay delay = " + totalProcessingDelay/batchCount + " ms "+
-        ", Avg ProcessingStartDelay delay = " + totalProcessingStartDelay/batchCount + " ms "+
+        ", Avg ProcessingMinusSubmission delay = " + totalProcessingStartDelay/batchCount + " ms "+
+        ", Avg SubmissionMinusCreate delay = " + totalSubimissionDelay/batchCount + " ms "+
         ", Total Consumed time in sec," + totalTime +
         ", Avg latency/batchInterval in ms," + avgLatencyAdjust +
         ", Avg records/sec," + recordThroughput +
@@ -152,6 +155,10 @@ class LatencyListener(ssc: StreamingContext, commonConfig: Map[String, Any]) ext
       }
       batchInfo.processingStartTime.zip(Option(batchInfo.submissionTime)).map(x => x._1 - x._2).headOption match {
         case Some(value) => totalProcessingStartDelay += value
+        case None => //Nothing
+      }
+      Option(batchInfo.submissionTime).zip(batchInfo.jobSetCreationEndTime).map(x => x._1 - x._2).headOption match {
+        case Some(value) => totalSubimissionDelay += value
         case None => //Nothing
       }
 
