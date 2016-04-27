@@ -109,7 +109,7 @@ class LatencyListener(ssc: StreamingContext, commonConfig: Map[String, Any]) ext
 
         imap("Final Metric") = " Total Batch count," + batchCount+
           ", startTime based on submissionTime,"+startTime +
-        ", startTime based on System,"+startTime1 +act
+        ", startTime based on System,"+startTime1 +
           ", endTime based on System,"+endTime +
         ", endTime based on processingEndTime,"+endTime1 +
         ", Total Records,"+totalRecords+
