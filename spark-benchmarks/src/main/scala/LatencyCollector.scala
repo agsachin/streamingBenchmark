@@ -147,7 +147,8 @@ class LatencyListener(ssc: StreamingContext, commonConfig: Map[String, Any]) ext
         case None => //Nothing
       }
       batchInfo.batchJobSetCreationDelay match {
-        case value:Long => totalJobSetCreationDelay += value
+        case Some(value) => totalJobSetCreationDelay += value
+        case None => //Nothing
       }
       batchInfo.processingDelay match {
         case Some(value) => totalProcessingDelay += value
