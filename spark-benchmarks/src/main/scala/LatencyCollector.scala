@@ -38,6 +38,8 @@ class LatencyListener(ssc: StreamingContext, commonConfig: Map[String, Any]) ext
   var endTime1 = 0L
   var totalDelay = 0L
   var totalJobSetCreationDelay = 0L
+  var totalProcessingDelay = 0L
+  var totalProcessingStartDelay = 0L
   var hasStarted = false
   var batchCount = 0
   var totalRecords = 0L
@@ -113,7 +115,9 @@ class LatencyListener(ssc: StreamingContext, commonConfig: Map[String, Any]) ext
           ", endTime based on System,"+endTime +
         ", endTime based on processingEndTime,"+endTime1 +
         ", Total Records,"+totalRecords+
-        ", Avg totalJobSetCreationDelay delay = " + totalJobSetCreationDelay/batchCount + " ms "+
+        ", Avg JobSetCreationDelay delay = " + totalJobSetCreationDelay/batchCount + " ms "+
+        ", Avg ProcessingDelay delay = " + totalProcessingDelay/batchCount + " ms "+
+        ", Avg ProcessingStartDelay delay = " + totalProcessingStartDelay/batchCount + " ms "+
         ", Total Consumed time in sec," + totalTime +
         ", Avg latency/batchInterval in ms," + avgLatencyAdjust +
         ", Avg records/sec," + recordThroughput +
@@ -133,13 +137,23 @@ class LatencyListener(ssc: StreamingContext, commonConfig: Map[String, Any]) ext
 
     if (hasStarted) {
       //      println("This delay:"+batchCompleted.batchInfo.processingDelay+"ms")
-      batchCompleted.batchInfo.processingDelay match {
+      val batchinfo = batchCompleted.batchInfo
+      batchinfo.processingDelay match {
         case Some(value) => totalDelay += value * recordThisBatch
         case None => //Nothing
       }
-      batchCompleted.batchInfo.batchJobSetCreationDelay match {
+      batchInfo.batchJobSetCreationDelay match {
         case value:Long => totalJobSetCreationDelay += value
       }
+      batchInfo.processingDelay match {
+        case Some(value) => totalProcessingDelay += value
+        case None => //Nothing
+      }
+      batchInfo.processingStartTime.zip(Option(batchInfo.submissionTime)).map(x => x._1 - x._2).headOption match {
+        case Some(value) => totalProcessingStartDelay += value
+        case None => //Nothing
+      }
+
       batchCount = batchCount + 1
     }
   }
