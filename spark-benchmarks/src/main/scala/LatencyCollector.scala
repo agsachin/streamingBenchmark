@@ -83,6 +83,7 @@ class LatencyListener(ssc: StreamingContext, commonConfig: Map[String, Any]) ext
         ", total Records so far," + totalRecords +
         ", record This Batch," + recordThisBatch +
         ", jobGenerateTime," +batchInfo.batchJobSetCreationDelay +
+        ", processingStartDelay," + batchInfo.processingStartTime.zip(Option(batchInfo.submissionTime)).map(x => x._1 - x._2).head +
         ", submission Time," + batchInfo.submissionTime +
         ", processing Start Time," + batchInfo.processingStartTime.getOrElse(0L) +
         ", processing End Time," + batchInfo.processingEndTime.getOrElse(0L) +
