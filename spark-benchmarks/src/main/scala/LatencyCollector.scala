@@ -79,18 +79,18 @@ class LatencyListener(ssc: StreamingContext, commonConfig: Map[String, Any]) ext
     if (!thread.isAlive) {
       totalRecords += recordThisBatch
       val imap = getMap
-      imap(batchInfo.batchTime.toString()) = "batchTime," + batchInfo.batchTime +
-        ", batch Count so far," + batchCount +
-        ", total Records so far," + totalRecords +
-        ", record This Batch," + recordThisBatch +
-        ", jobGenerateTime," +batchInfo.batchJobSetCreationDelay +
-        ", processing-submission," + batchInfo.processingStartTime.zip(Option(batchInfo.submissionTime)).map(x => x._1 - x._2).head +
-        ", submission-create," + Option(batchInfo.submissionTime).zip(batchInfo.jobSetCreationStartTime).map(x => x._1 - x._2).head +
-        ", submission Time," + batchInfo.submissionTime +
-        ", processing Start Time," + batchInfo.processingStartTime.getOrElse(0L) +
-        ", processing End Time," + batchInfo.processingEndTime.getOrElse(0L) +
-        ", scheduling Delay," + batchInfo.schedulingDelay.getOrElse(0L) +
-        ", processing Delay," + batchInfo.processingDelay.getOrElse(0L)
+      imap(batchInfo.batchTime.toString()) = batchInfo.batchTime +
+        "," + batchCount +
+        "," + totalRecords +
+        "," + recordThisBatch +
+        "," + batchInfo.batchJobSetCreationDelay +
+        "," + batchInfo.processingStartTime.zip(Option(batchInfo.submissionTime)).map(x => x._1 - x._2).head +
+        "," + Option(batchInfo.submissionTime).zip(batchInfo.jobSetCreationStartTime).map(x => x._1 - x._2).head +
+        "," + batchInfo.submissionTime +
+        "," + batchInfo.processingStartTime.getOrElse(0L) +
+        "," + batchInfo.processingEndTime.getOrElse(0L) +
+        "," + batchInfo.schedulingDelay.getOrElse(0L) +
+        "," + batchInfo.processingDelay.getOrElse(0L)
 
       setMap(imap)
    }
@@ -136,6 +136,9 @@ class LatencyListener(ssc: StreamingContext, commonConfig: Map[String, Any]) ext
         startTime = batchCompleted.batchInfo.submissionTime
         startTime1 =  System.currentTimeMillis()
         hasStarted = true
+        val imap = getMap
+        imap("headers") = "batchTime, batch Count so far, total Records so far, record This Batch, jobGenerateTime, processing-submission, submission-create, submission Time, processing Start Time, processing End Time, scheduling Delay, processing Delay "
+        setMap(imap)
       }
     }
 
