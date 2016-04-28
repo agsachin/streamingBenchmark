@@ -84,8 +84,6 @@ class LatencyListener(ssc: StreamingContext, commonConfig: Map[String, Any]) ext
         "," + totalRecords +
         "," + recordThisBatch +
         "," + batchInfo.batchJobSetCreationDelay.getOrElse(0L) +
-        "," + batchInfo.processingStartTime.zip(Option(batchInfo.submissionTime)).map(x => x._1 - x._2).head +
-        "," + Option(batchInfo.submissionTime).zip(batchInfo.jobSetCreationStartTime).map(x => x._1 - x._2).head +
         "," + batchInfo.submissionTime +
         "," + batchInfo.processingStartTime.getOrElse(0L) +
         "," + batchInfo.processingEndTime.getOrElse(0L) +
@@ -137,7 +135,7 @@ class LatencyListener(ssc: StreamingContext, commonConfig: Map[String, Any]) ext
         startTime1 =  System.currentTimeMillis()
         hasStarted = true
         val imap = getMap
-        imap("headers") = "batchTime, batch Count so far, total Records so far, record This Batch, jobGenerateTime, processing-submission, submission-create, submission Time, processing Start Time, processing End Time, scheduling Delay, processing Delay "
+        imap("headers") = "batchTime, batch Count so far, total Records so far, record This Batch, jobGenerateTime, submission Time, processing Start Time, processing End Time, scheduling Delay, processing Delay "
         setMap(imap)
       }
     }

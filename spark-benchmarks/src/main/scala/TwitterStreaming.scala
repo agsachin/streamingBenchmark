@@ -99,7 +99,6 @@ object TwitterStreaming {
     val hashTags = lines.flatMap(status => status.split(" ").filter(_.startsWith("#")))
     val topCounts60 = hashTags.map((_, 1)).reduceByKeyAndWindow(_ + _, Milliseconds(windowSize))
       .map { case (topic, count) => (count, topic) }
-      .transform(_.sortByKey(false))
 
     topCounts60.foreachRDD(rdd=> {val topList = rdd.take(10)
       val imap = getMap
