@@ -5,11 +5,12 @@
 package spark.benchmark
 
 import benchmark.common.Utils
-import kafka.serializer.StringDecoder
-import org.apache.log4j.{Level, Logger}
+//import org.apache.log4j.{Level, Logger}
+
 import org.apache.spark.{SparkConf,HashPartitioner}
-import org.apache.spark.streaming.kafka.KafkaUtils
-import org.apache.spark.streaming.{Milliseconds, StreamingContext}
+import org.apache.spark.sql.SparkSession
+import org.apache.spark.sql.streaming.{OutputMode, ProcessingTime, StreamingQueryListener}
+import org.apache.spark.sql.execution.streaming.{StreamExecution, MemorySink, Offset }
 
 import scala.collection.JavaConverters._
 
@@ -24,8 +25,8 @@ object TwitterStreaming {
     this.imap = imap
   }
 
-    Logger.getLogger("org").setLevel(Level.OFF)
-    Logger.getLogger("akka").setLevel(Level.OFF)
+    //Logger.getLogger("org").setLevel(Level.OFF)
+    //Logger.getLogger("akka").setLevel(Level.OFF)
 
   def main(args: Array[String]) {
     val commonConfig = Utils.findAndReadConfigFile(args(0), true).asInstanceOf[java.util.Map[String, Any]];
@@ -77,62 +78,38 @@ object TwitterStreaming {
     // val brokerListString = joinHosts(kafkaBrokers, kafkaPort)
 
 
-    val sparkConf = new SparkConf()
-      .setAppName("TwitterStreaming")
-      .set("spark.eventLog.enabled","true")
-    //.setMaster("local[*]")
-    .set("spark.eventLog.dir","file:///tmp/spark-events")
+    val spark = SparkSession.builder()
+      .appName("TwitterStreaming")
+      .config("spark.eventLog.enabled","true")
+      .config("spark.eventLog.dir","file:///tmp/spark-events")
+      .getOrCreate()
 
-    val ssc = new StreamingContext(sparkConf, Milliseconds(batchSize))
-    //ssc.checkpoint(checkPointPath)
+    spark.conf.set("spark.sql.streaming.checkpointLocation", checkPointPath)
+    spark.conf.set(org.apache.spark.sql.internal.SQLConf.STREAMING_SCHEMA_INFERENCE.key,"true")
 
-    val listener = new LatencyListener(ssc,commonConfig)
+    /* val listener = new LatencyListener(ssc,commonConfig)
     ssc.addStreamingListener(listener)
+    ssc.sparkContext.addSparkListener(listener) */
 
-    ssc.sparkContext.addSparkListener(listener)
+    val reader = spark.readStream.format("json").load("hdfs://10.168.102.170:9000/user/streamdir")
 
-    val kafkaParams = Map[String, String]("metadata.broker.list" -> brokerListString.toString())
-    System.err.println(
-      "Trying to connect to Kafka at " + brokerListString.toString())
-    val messages = KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder](
-      ssc, kafkaParams, topicsSet)
+    import spark.implicits._
+    val hashtags = reader.select("text")
+      .as[String]
+      .flatMap{tweet => tweet.split(" ").filter(_.startsWith("#")) }
 
-    val lines = messages.map(_._2)
-    val hashTags = lines.flatMap(status => status.split(" ").filter(_.startsWith("#")))
-    //val topCounts60 = hashTags.map((_, 1)).reduceByKeyAndWindow(_ + _, Milliseconds(windowSize))
-    //val topCounts60 = hashTags.map((_, 1)).reduceByKeyAndWindow(_ + _, _-_,
-    //  Milliseconds(windowSize),Milliseconds(batchSize) )
-    val topCounts60 = hashTags.map((_, 1)).reduceByKey(_ + _)
-      .map { case (topic, count) => (count, topic) }
-      //.transform(_.sortByKey(false))
-      //.groupByKey()
+    hashtags.createOrReplaceTempView("hashTags")
+    val hashtagsCount =
+      spark.sql("select value, count(*) as count from hashTags group by value")
 
-    topCounts60.foreachRDD(rdd=> {val topList = rdd.take(10)
-      val imap = getMap
-      topList.foreach{case (count, tag) =>
-        //imap(tag) = if (imap.contains(tag)) imap(tag) + count else count
-      }
-      setMap(imap)
-      /*val imap = getMap
-      rdd.foreach{case (count, tag) =>
-        imap(tag) = if (imap.contains(tag)) imap(tag) + count else count
-      }
-      setMap(imap)*/
-    })
+    val query = hashtagsCount.writeStream
+      .outputMode(OutputMode.Complete)
+      .format("console")
+      .queryName("twitterstreaming")
+      .start()
 
-    sys.ShutdownHookThread {
-      println("Gracefully stopping Spark Streaming Application")
-      ssc.stop(true, true)
-      println("Application stopped")
-    }
 
-    //    topCounts60.foreachRDD(rdd => {
-    //      val topList = rdd.take(10)
-    //      topList.foreach { case (count, tag) => println("%s (%s tweets)".format(tag, count)) }
-    //    })
-
-    ssc.start()
-    ssc.awaitTermination()
+    query.awaitTermination()
   }
 
 }

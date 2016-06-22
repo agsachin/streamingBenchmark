@@ -17,6 +17,7 @@
 
 package spark.benchmark
 
+/*
 import java.util
 
 import org.apache.spark.scheduler._
@@ -391,3 +392,4 @@ class LatencyListener(ssc: StreamingContext, commonConfig: util.Map[String, Any]
     job.end = jobEnd.time
   }
 }
+*/

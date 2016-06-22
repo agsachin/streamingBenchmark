@@ -23,27 +23,42 @@
     </repositories>
 
     <dependencies>
-        <dependency>
-            <groupId>org.json</groupId>
-            <artifactId>json</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.kafka</groupId>
-            <artifactId>kafka_${scala.binary.version}</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>redis.clients</groupId>
-            <artifactId>jedis</artifactId>
-        </dependency>
+        <!--   <dependency>
+              <groupId>org.json</groupId>
+              <artifactId>json</artifactId>
+          </dependency>
+         <dependency>
+              <groupId>org.apache.kafka</groupId>
+              <artifactId>kafka_${scala.binary.version}</artifactId>
+          </dependency>
+          <dependency>
+              <groupId>redis.clients</groupId>
+              <artifactId>jedis</artifactId>
+          </dependency> -->
         <dependency>
             <groupId>org.apache.spark</groupId>
             <artifactId>spark-core_${scala.binary.version}</artifactId>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/../../../../master/spark/core/target/spark-core_2.11-2.0.0-SNAPSHOT.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>org.apache.spark</groupId>
+            <artifactId>spark-sql_${scala.binary.version}</artifactId>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/../../../../master/spark/sql/core/target/spark-sql_2.11-2.0.0-SNAPSHOT.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-catalyst_${scala.binary.version}</artifactId>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/../../../../master/spark/sql/catalyst/target/spark-catalyst_2.11-2.0.0-SNAPSHOT.jar</systemPath>
+        </dependency>
+
+        <!-- <dependency>
+            <groupId>org.apache.spark</groupId>
             <artifactId>spark-streaming_${scala.binary.version}</artifactId>
             <scope>system</scope>
-            <systemPath>${project.basedir}/../../1.6-mod/spark/streaming/target/spark-streaming_2.10-1.6.0-SNAPSHOT.jar</systemPath>
+            <systemPath>${project.basedir}/../../master/spark/streaming/target/spark-streaming_2.10-1.6.0-SNAPSHOT.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>org.apache.spark</groupId>
@@ -54,10 +69,11 @@
         <dependency>
             <groupId>org.sedis</groupId>
             <artifactId>sedis_${scala.binary.version}</artifactId>
-        </dependency>
+        </dependency> -->
         <dependency>
             <groupId>org.scala-lang</groupId>
             <artifactId>scala-library</artifactId>
+            <version>${scala.version}</version>
         </dependency>
         <dependency>
             <groupId>com.demo.stream</groupId>
@@ -112,7 +128,7 @@
                         <javacArg>${java.version}</javacArg>
                         <javacArg>-target</javacArg>
                         <javacArg>${java.version}</javacArg>
-                        <javacArg>-Xlint:all,-serial,-path</javacArg>
+                        <javacArg>-Xlint:all,-serial,-path,-Ylog-classpath</javacArg>
                     </javacArgs>
                 </configuration>
             </plugin>

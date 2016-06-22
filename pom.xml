@@ -15,12 +15,12 @@ Licensed under the terms of the Apache License 2.0. Please see LICENSE file in t
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <spark.version>1.6.0</spark.version>
+        <spark.version>2.0.0</spark.version>
         <kafka.version>0.8.2.1</kafka.version>
         <flink.version>0.10.1</flink.version>
         <storm.version>0.10.0</storm.version>
-        <scala.binary.version>2.10</scala.binary.version>
-        <scala.version>2.10.4</scala.version>
+        <scala.binary.version>2.11</scala.binary.version>
+        <scala.version>2.11.8</scala.version>
         <json.version>20141113</json.version>
         <jedis.version>2.4.2</jedis.version>
         <sedis.version>1.2.2</sedis.version>
@@ -81,7 +81,7 @@ Licensed under the terms of the Apache License 2.0. Please see LICENSE file in t
                 <artifactId>json</artifactId>
                 <version>${json.version}</version>
             </dependency>
-            <dependency>
+           <!-- <dependency>
                 <groupId>org.apache.kafka</groupId>
                 <artifactId>kafka_${scala.binary.version}</artifactId>
                 <version>${kafka.version}</version>
@@ -95,18 +95,18 @@ Licensed under the terms of the Apache License 2.0. Please see LICENSE file in t
                         <artifactId>log4j</artifactId>
                     </exclusion>
                 </exclusions>
-            </dependency>
+            </dependency> -->
             <dependency>
                 <groupId>redis.clients</groupId>
                 <artifactId>jedis</artifactId>
                 <version>${jedis.version}</version>
             </dependency>
-            <dependency>
+             <dependency>
                 <groupId>org.apache.spark</groupId>
                 <artifactId>spark-core_${scala.binary.version}</artifactId>
                 <version>${spark.version}</version>
             </dependency>
-            <dependency>
+          <!--   <dependency>
                 <groupId>org.apache.spark</groupId>
                 <artifactId>spark-streaming_${scala.binary.version}</artifactId>
                 <version>${spark.version}</version>
@@ -115,7 +115,18 @@ Licensed under the terms of the Apache License 2.0. Please see LICENSE file in t
                 <groupId>org.apache.spark</groupId>
                 <artifactId>spark-streaming-kafka_${scala.binary.version}</artifactId>
                 <version>${spark.version}</version>
+            </dependency> -->
+            <dependency>
+                <groupId>org.apache.spark</groupId>
+                <artifactId>spark-sql_${scala.binary.version}</artifactId>
+                <version>${spark.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.apache.spark</groupId>
+                <artifactId>spark-catalyst_${scala.binary.version}</artifactId>
+                <version>${spark.version}</version>
+            </dependency>
+
             <dependency>
                 <groupId>org.sedis</groupId>
                 <artifactId>sedis_${scala.binary.version}</artifactId>
