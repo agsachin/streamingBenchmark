@@ -15,12 +15,13 @@
 
     <artifactId>spark-benchmarks</artifactId>
 
+    <!--
     <repositories>
         <repository>
             <id>org.sedis</id>
             <url>http://pk11-scratch.googlecode.com/svn/trunk</url>
         </repository>
-    </repositories>
+    </repositories> -->
 
     <dependencies>
         <!--   <dependency>
@@ -40,18 +41,21 @@
             <artifactId>spark-core_${scala.binary.version}</artifactId>
             <scope>system</scope>
             <systemPath>${project.basedir}/../../../../master/spark/core/target/spark-core_2.11-2.0.0-SNAPSHOT.jar</systemPath>
+            <version>2.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.spark</groupId>
             <artifactId>spark-sql_${scala.binary.version}</artifactId>
             <scope>system</scope>
             <systemPath>${project.basedir}/../../../../master/spark/sql/core/target/spark-sql_2.11-2.0.0-SNAPSHOT.jar</systemPath>
+            <version>2.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.spark</groupId>
             <artifactId>spark-catalyst_${scala.binary.version}</artifactId>
             <scope>system</scope>
             <systemPath>${project.basedir}/../../../../master/spark/sql/catalyst/target/spark-catalyst_2.11-2.0.0-SNAPSHOT.jar</systemPath>
+            <version>2.0.0-SNAPSHOT</version>
         </dependency>
 
         <!-- <dependency>
@@ -72,12 +76,15 @@
         </dependency> -->
         <dependency>
             <groupId>org.scala-lang</groupId>
-            <artifactId>scala-library</artifactId>
+            <artifactId>scala-reflect</artifactId>
             <version>${scala.version}</version>
         </dependency>
         <dependency>
             <groupId>com.demo.stream</groupId>
             <artifactId>streaming-benchmark-common</artifactId>
+            <!-- <version>0.1.0</version> -->
+            <scope>system</scope>
+            <systemPath>${project.basedir}/../streaming-benchmark-common/target/streaming-benchmark-common-0.1.0.jar</systemPath>
             <version>0.1.0</version>
         </dependency>
     </dependencies>
